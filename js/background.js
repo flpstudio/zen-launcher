@@ -323,16 +323,17 @@ function initBackgroundRefresh() {
 
   // ---- Mood presets ----
   const MOOD_PRESETS = {
-    clear:     { dim: 15, blur: 0,  widgetOpacity: 15, widgetBlur: 0 },
-    cozy:      { dim: 45, blur: 6,  widgetOpacity: 30, widgetBlur: 5 },
-    focus:     { dim: 65, blur: 12, widgetOpacity: 25, widgetBlur: 0 },
-    cinematic: { dim: 70, blur: 0,  widgetOpacity: 35, widgetBlur: 10 },
+    clear:     { dim: 15, blur: 0,  widgetOpacity: 20, widgetBlur: 5,  grayscale: false },
+    cozy:      { dim: 45, blur: 6,  widgetOpacity: 30, widgetBlur: 5,  grayscale: false },
+    focus:     { dim: 65, blur: 12, widgetOpacity: 25, widgetBlur: 0,  grayscale: true },
+    cinematic: { dim: 70, blur: 0,  widgetOpacity: 35, widgetBlur: 10, grayscale: true },
   };
 
-  function detectMoodPreset(dim, blur, wOpacity, wBlur) {
+  function detectMoodPreset(dim, blur, wOpacity, wBlur, grayscale) {
     for (const [name, preset] of Object.entries(MOOD_PRESETS)) {
       if (preset.dim === dim && preset.blur === blur &&
-          preset.widgetOpacity === wOpacity && preset.widgetBlur === wBlur) return name;
+          preset.widgetOpacity === wOpacity && preset.widgetBlur === wBlur &&
+          preset.grayscale === grayscale) return name;
     }
     return 'moodCustom';
   }
@@ -481,7 +482,7 @@ function initBackgroundRefresh() {
 
   // Load saved settings
   if (typeof chrome !== 'undefined' && chrome.storage) {
-    chrome.storage.local.get(['bgDim', 'bgBlur', 'bgRotateInterval', 'bgLastRotated', 'widgetOpacity', 'widgetBlur', 'bgType', 'bgCustomColor'], (result) => {
+    chrome.storage.local.get(['bgDim', 'bgBlur', 'bgRotateInterval', 'bgLastRotated', 'widgetOpacity', 'widgetBlur', 'bgType', 'bgCustomColor', 'widgetGrayscale'], (result) => {
       const dim = result.bgDim !== undefined ? result.bgDim : 50;
       const blur = result.bgBlur !== undefined ? result.bgBlur : 0;
       const wOpacity = result.widgetOpacity !== undefined ? result.widgetOpacity : 25;
@@ -489,6 +490,7 @@ function initBackgroundRefresh() {
       const rotateInterval = result.bgRotateInterval !== undefined ? result.bgRotateInterval : 86400000;
       const lastRotated = result.bgLastRotated || 0;
       const bgType = result.bgType || 'image';
+      const grayscale = result.widgetGrayscale === true;
 
       // Restore saved custom color
       if (result.bgCustomColor) {
@@ -514,7 +516,7 @@ function initBackgroundRefresh() {
       
       applyBackgroundEffects(dim, blur);
       applyWidgetEffects(wOpacity, wBlur);
-      selectMoodRadio(detectMoodPreset(dim, blur, wOpacity, wBlur));
+      selectMoodRadio(detectMoodPreset(dim, blur, wOpacity, wBlur, grayscale));
 
       // Apply background type
       selectBgTypeOption(bgType);
@@ -553,6 +555,13 @@ function initBackgroundRefresh() {
       widgetOpacityValue.textContent = `${preset.widgetOpacity}%`;
       widgetBlurSlider.value = preset.widgetBlur;
       widgetBlurValue.textContent = `${preset.widgetBlur}px`;
+      // Apply grayscale from preset
+      const gsToggle = document.getElementById('widgetGrayscaleToggle');
+      if (gsToggle) {
+        gsToggle.checked = preset.grayscale;
+        document.body.classList.toggle('grayscale-idle', preset.grayscale);
+        chrome.storage.local.set({ widgetGrayscale: preset.grayscale });
+      }
       applyBackgroundEffects(preset.dim, preset.blur);
       applyWidgetEffects(preset.widgetOpacity, preset.widgetBlur);
       saveBackgroundSettings();
@@ -560,8 +569,10 @@ function initBackgroundRefresh() {
   });
 
   function currentMoodValues() {
+    const gsToggle = document.getElementById('widgetGrayscaleToggle');
     return [parseInt(dimSlider.value), parseInt(blurSlider.value),
-            parseInt(widgetOpacitySlider.value), parseInt(widgetBlurSlider.value)];
+            parseInt(widgetOpacitySlider.value), parseInt(widgetBlurSlider.value),
+            gsToggle ? gsToggle.checked : false];
   }
 
   // Dim slider change
@@ -599,6 +610,14 @@ function initBackgroundRefresh() {
     saveBackgroundSettings();
     selectMoodRadio(detectMoodPreset(...currentMoodValues()));
   });
+
+  // Grayscale toggle change — re-detect mood preset
+  const gsToggle = document.getElementById('widgetGrayscaleToggle');
+  if (gsToggle) {
+    gsToggle.addEventListener('change', () => {
+      selectMoodRadio(detectMoodPreset(...currentMoodValues()));
+    });
+  }
 
   // Rotation slider change
   rotateSlider.addEventListener('input', () => {
