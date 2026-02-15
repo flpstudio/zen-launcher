@@ -3768,6 +3768,11 @@ body.ticker-hidden .right-panels-container {
   pointer-events: auto;
 }
 
+/* Elevate life counter above other widgets when settings are open */
+.life-counter:has(.life-counter-settings-panel.open) {
+  z-index: 500;
+}
+
 .life-counter-settings-content {
   padding: 0;
 }
