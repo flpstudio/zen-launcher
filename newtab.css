@@ -2918,6 +2918,8 @@ body.ticker-hidden .right-panels-container {
   gap: 8px;
   padding: 6px 12px;
   background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 8px;
   opacity: 0;
   transform: translateY(-4px);
@@ -2962,10 +2964,11 @@ body.ticker-hidden .right-panels-container {
   height: 3px;
   -webkit-appearance: none;
   appearance: none;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.4);
   border-radius: 2px;
   cursor: pointer;
   flex-shrink: 0;
+  opacity: 1;
 }
 
 .sounds-bar-volume::-webkit-slider-thumb {
@@ -2980,7 +2983,7 @@ body.ticker-hidden .right-panels-container {
 
 .sounds-volume-label {
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 1);
   min-width: 28px;
   text-align: right;
   font-variant-numeric: tabular-nums;
@@ -2991,7 +2994,7 @@ body.ticker-hidden .right-panels-container {
 .sounds-volume-icon {
   width: 14px;
   height: 14px;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 1);
   flex-shrink: 0;
 }
 

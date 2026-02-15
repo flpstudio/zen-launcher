@@ -49,6 +49,35 @@ function initGrayscaleIdle() {
   });
 }
 
+// ============ Background Grayscale Feature ============
+
+function initBgGrayscale() {
+  chrome.storage.local.get('bgGrayscale', (result) => {
+    const enabled = result.bgGrayscale === true;
+    document.body.classList.toggle('bg-grayscale', enabled);
+    const toggle = document.getElementById('bgGrayscaleToggle');
+    if (toggle) {
+      toggle.checked = enabled;
+      toggle.addEventListener('change', () => {
+        const on = toggle.checked;
+        document.body.classList.toggle('bg-grayscale', on);
+        chrome.storage.local.set({ bgGrayscale: on });
+        // Re-apply background filter to combine blur + grayscale
+        const bgImage = document.getElementById('backgroundImage');
+        if (bgImage) {
+          const currentFilter = bgImage.style.filter || '';
+          const hasBlur = currentFilter.match(/blur\((\d+)px\)/);
+          const blurVal = hasBlur ? parseInt(hasBlur[1]) : 0;
+          const filters = [];
+          if (blurVal > 0) filters.push(`blur(${blurVal}px)`);
+          if (on) filters.push('grayscale(1)');
+          bgImage.style.filter = filters.length > 0 ? filters.join(' ') : 'none';
+        }
+      });
+    }
+  });
+}
+
 let zenPulseInterval = null;
 let zenPulseTimeout = null;
 
@@ -323,17 +352,18 @@ function initBackgroundRefresh() {
 
   // ---- Mood presets ----
   const MOOD_PRESETS = {
-    clear:     { dim: 15, blur: 0,  widgetOpacity: 20, widgetBlur: 5,  grayscale: false },
-    cozy:      { dim: 45, blur: 6,  widgetOpacity: 30, widgetBlur: 5,  grayscale: false },
-    focus:     { dim: 65, blur: 12, widgetOpacity: 25, widgetBlur: 0,  grayscale: true },
-    cinematic: { dim: 70, blur: 0,  widgetOpacity: 35, widgetBlur: 10, grayscale: true },
+    clear:     { dim: 15, blur: 0,  widgetOpacity: 20, widgetBlur: 5,  grayscale: false, bgGrayscale: false },
+    cozy:      { dim: 30, blur: 5,  widgetOpacity: 25, widgetBlur: 3,  grayscale: false, bgGrayscale: false },
+    focus:     { dim: 50, blur: 7,  widgetOpacity: 20, widgetBlur: 10, grayscale: true,  bgGrayscale: false },
+    cinematic: { dim: 60, blur: 0,  widgetOpacity: 30, widgetBlur: 5,  grayscale: false,  bgGrayscale: true },
   };
+  const MOOD_ORDER = ['clear', 'cozy', 'focus', 'cinematic'];
 
-  function detectMoodPreset(dim, blur, wOpacity, wBlur, grayscale) {
+  function detectMoodPreset(dim, blur, wOpacity, wBlur, grayscale, bgGrayscale) {
     for (const [name, preset] of Object.entries(MOOD_PRESETS)) {
       if (preset.dim === dim && preset.blur === blur &&
           preset.widgetOpacity === wOpacity && preset.widgetBlur === wBlur &&
-          preset.grayscale === grayscale) return name;
+          preset.grayscale === grayscale && preset.bgGrayscale === bgGrayscale) return name;
     }
     return 'moodCustom';
   }
@@ -350,6 +380,8 @@ function initBackgroundRefresh() {
   const bgCustomPickerClose = document.getElementById('bgCustomPickerClose');
   const bgCustomCanvas = document.getElementById('bgCustomCanvas');
   const blurSetting = blurSlider.closest('.bg-setting');
+  const bgGrayscaleEl = document.getElementById('bgGrayscaleToggle');
+  const bgGrayscaleSetting = bgGrayscaleEl ? bgGrayscaleEl.closest('.bg-setting') : null;
   const customSwatch = document.querySelector('.bg-type-custom-swatch');
   const customLabel = document.querySelector('.bg-type-custom-label');
   let savedCustomColor = '#3a3a4a';
@@ -438,6 +470,12 @@ function initBackgroundRefresh() {
       bgRefreshBtn.style.display = '';
       rotateSlider.closest('.bg-setting').classList.remove('disabled');
       blurSetting.classList.remove('disabled');
+      if (bgGrayscaleSetting) bgGrayscaleSetting.classList.remove('disabled');
+      // Restore bg grayscale state from toggle when switching back to image
+      const bgGsToggle = document.getElementById('bgGrayscaleToggle');
+      if (bgGsToggle && bgGsToggle.checked) {
+        document.body.classList.add('bg-grayscale');
+      }
       bgCustomPickerPanel.style.display = 'none';
       loadBackgroundImage(true);
       const step = parseInt(rotateSlider.value);
@@ -446,6 +484,9 @@ function initBackgroundRefresh() {
       bgRefreshBtn.style.display = 'none';
       rotateSlider.closest('.bg-setting').classList.add('disabled');
       blurSetting.classList.add('disabled');
+      if (bgGrayscaleSetting) bgGrayscaleSetting.classList.add('disabled');
+      // Turn off bg grayscale for solid colors so they stay vibrant
+      document.body.classList.remove('bg-grayscale');
       applyBackgroundColor(bgType);
       startBackgroundRotation(0);
     }
@@ -482,15 +523,16 @@ function initBackgroundRefresh() {
 
   // Load saved settings
   if (typeof chrome !== 'undefined' && chrome.storage) {
-    chrome.storage.local.get(['bgDim', 'bgBlur', 'bgRotateInterval', 'bgLastRotated', 'widgetOpacity', 'widgetBlur', 'bgType', 'bgCustomColor', 'widgetGrayscale'], (result) => {
-      const dim = result.bgDim !== undefined ? result.bgDim : 50;
+    chrome.storage.local.get(['bgDim', 'bgBlur', 'bgRotateInterval', 'bgLastRotated', 'widgetOpacity', 'widgetBlur', 'bgType', 'bgCustomColor', 'widgetGrayscale', 'bgGrayscale'], (result) => {
+      const dim = result.bgDim !== undefined ? result.bgDim : 15;
       const blur = result.bgBlur !== undefined ? result.bgBlur : 0;
-      const wOpacity = result.widgetOpacity !== undefined ? result.widgetOpacity : 25;
-      const wBlur = result.widgetBlur !== undefined ? result.widgetBlur : 0;
+      const wOpacity = result.widgetOpacity !== undefined ? result.widgetOpacity : 20;
+      const wBlur = result.widgetBlur !== undefined ? result.widgetBlur : 5;
       const rotateInterval = result.bgRotateInterval !== undefined ? result.bgRotateInterval : 86400000;
       const lastRotated = result.bgLastRotated || 0;
       const bgType = result.bgType || 'image';
-      const grayscale = result.widgetGrayscale === true;
+      const grayscale = result.widgetGrayscale !== undefined ? result.widgetGrayscale : false;
+      const bgGrayscale = result.bgGrayscale !== undefined ? result.bgGrayscale : false;
 
       // Restore saved custom color
       if (result.bgCustomColor) {
@@ -516,7 +558,9 @@ function initBackgroundRefresh() {
       
       applyBackgroundEffects(dim, blur);
       applyWidgetEffects(wOpacity, wBlur);
-      selectMoodRadio(detectMoodPreset(dim, blur, wOpacity, wBlur, grayscale));
+      // Fresh user (no saved settings) → show Custom; otherwise detect preset
+      const isFirstLoad = result.bgDim === undefined && result.widgetOpacity === undefined;
+      selectMoodRadio(isFirstLoad ? 'moodCustom' : detectMoodPreset(dim, blur, wOpacity, wBlur, grayscale, bgGrayscale));
 
       // Apply background type
       selectBgTypeOption(bgType);
@@ -524,6 +568,9 @@ function initBackgroundRefresh() {
         bgRefreshBtn.style.display = 'none';
         rotateSlider.closest('.bg-setting').classList.add('disabled');
         blurSetting.classList.add('disabled');
+        if (bgGrayscaleSetting) bgGrayscaleSetting.classList.add('disabled');
+        // Don't apply bg grayscale on solid colors
+        document.body.classList.remove('bg-grayscale');
         startBackgroundRotation(0);
       } else {
         startBackgroundRotation(rotateInterval);
@@ -562,6 +609,13 @@ function initBackgroundRefresh() {
         document.body.classList.toggle('grayscale-idle', preset.grayscale);
         chrome.storage.local.set({ widgetGrayscale: preset.grayscale });
       }
+      // Apply background grayscale from preset
+      const bgGsToggle = document.getElementById('bgGrayscaleToggle');
+      if (bgGsToggle) {
+        bgGsToggle.checked = preset.bgGrayscale;
+        document.body.classList.toggle('bg-grayscale', preset.bgGrayscale);
+        chrome.storage.local.set({ bgGrayscale: preset.bgGrayscale });
+      }
       applyBackgroundEffects(preset.dim, preset.blur);
       applyWidgetEffects(preset.widgetOpacity, preset.widgetBlur);
       saveBackgroundSettings();
@@ -570,9 +624,11 @@ function initBackgroundRefresh() {
 
   function currentMoodValues() {
     const gsToggle = document.getElementById('widgetGrayscaleToggle');
+    const bgGsToggle = document.getElementById('bgGrayscaleToggle');
     return [parseInt(dimSlider.value), parseInt(blurSlider.value),
             parseInt(widgetOpacitySlider.value), parseInt(widgetBlurSlider.value),
-            gsToggle ? gsToggle.checked : false];
+            gsToggle ? gsToggle.checked : false,
+            bgGsToggle ? bgGsToggle.checked : false];
   }
 
   // Dim slider change
@@ -619,6 +675,14 @@ function initBackgroundRefresh() {
     });
   }
 
+  // Background grayscale toggle change — re-detect mood preset
+  const bgGsToggle = document.getElementById('bgGrayscaleToggle');
+  if (bgGsToggle) {
+    bgGsToggle.addEventListener('change', () => {
+      selectMoodRadio(detectMoodPreset(...currentMoodValues()));
+    });
+  }
+
   // Rotation slider change
   rotateSlider.addEventListener('input', () => {
     const step = parseInt(rotateSlider.value);
@@ -626,6 +690,58 @@ function initBackgroundRefresh() {
     const interval = ROTATE_STEPS[step];
     startBackgroundRotation(interval);
     saveBackgroundSettings();
+  });
+
+  // Apply a mood preset programmatically
+  function applyMoodPreset(name) {
+    const preset = MOOD_PRESETS[name];
+    if (!preset) return;
+    dimSlider.value = preset.dim;
+    dimValue.textContent = `${preset.dim}%`;
+    blurSlider.value = preset.blur;
+    blurValue.textContent = `${preset.blur}px`;
+    widgetOpacitySlider.value = preset.widgetOpacity;
+    widgetOpacityValue.textContent = `${preset.widgetOpacity}%`;
+    widgetBlurSlider.value = preset.widgetBlur;
+    widgetBlurValue.textContent = `${preset.widgetBlur}px`;
+    // Widget grayscale
+    const gs = document.getElementById('widgetGrayscaleToggle');
+    if (gs) {
+      gs.checked = preset.grayscale;
+      document.body.classList.toggle('grayscale-idle', preset.grayscale);
+      chrome.storage.local.set({ widgetGrayscale: preset.grayscale });
+    }
+    // Background grayscale
+    const bgs = document.getElementById('bgGrayscaleToggle');
+    if (bgs) {
+      bgs.checked = preset.bgGrayscale;
+      document.body.classList.toggle('bg-grayscale', preset.bgGrayscale);
+      chrome.storage.local.set({ bgGrayscale: preset.bgGrayscale });
+    }
+    applyBackgroundEffects(preset.dim, preset.blur);
+    applyWidgetEffects(preset.widgetOpacity, preset.widgetBlur);
+    saveBackgroundSettings();
+    selectMoodRadio(name);
+  }
+
+  // Alt+Shift+] / Alt+Shift+[ — cycle mood presets
+  document.addEventListener('keydown', (e) => {
+    if (!e.altKey || !e.shiftKey) return;
+    if (e.code !== 'BracketRight' && e.code !== 'BracketLeft') return;
+    const tag = document.activeElement?.tagName;
+    const editable = document.activeElement?.isContentEditable;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || editable) return;
+    e.preventDefault();
+    // Find current preset index
+    const currentName = detectMoodPreset(...currentMoodValues());
+    let idx = MOOD_ORDER.indexOf(currentName);
+    if (idx === -1) idx = 0; // if custom, start from beginning
+    if (e.code === 'BracketRight') {
+      idx = (idx + 1) % MOOD_ORDER.length;
+    } else {
+      idx = (idx - 1 + MOOD_ORDER.length) % MOOD_ORDER.length;
+    }
+    applyMoodPreset(MOOD_ORDER[idx]);
   });
 }
 
@@ -655,7 +771,11 @@ function applyBackgroundEffects(dim, blur) {
   }
   
   if (bgImage) {
-    bgImage.style.filter = blur > 0 ? `blur(${blur}px)` : 'none';
+    const isBgGrayscale = document.body.classList.contains('bg-grayscale');
+    const filters = [];
+    if (blur > 0) filters.push(`blur(${blur}px)`);
+    if (isBgGrayscale) filters.push('grayscale(1)');
+    bgImage.style.filter = filters.length > 0 ? filters.join(' ') : 'none';
     // Always keep slight scale to avoid zoom jump when blur transitions from 0
     bgImage.style.transform = 'scale(1.05)';
   }

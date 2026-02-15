@@ -717,6 +717,9 @@ async function init() {
   // Initialize Grayscale Idle
   initGrayscaleIdle();
 
+  // Initialize Background Grayscale
+  initBgGrayscale();
+
   // Initialize column alignment settings
   initColumnAlignmentSettings();
   
