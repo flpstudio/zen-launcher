@@ -309,7 +309,7 @@ body {
   bottom: 0;
   width: 380px;
   max-width: 90vw;
-  background: rgba(15, 15, 25, 0.35);
+  background: rgba(15, 15, 15, 0.35);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
   border-right: 1px solid rgba(255, 255, 255, 0.08);
