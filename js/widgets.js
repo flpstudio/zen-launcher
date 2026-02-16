@@ -828,9 +828,11 @@ audioChannel.onmessage = (e) => {
 // Update tab favicon based on audio state
 function updateFavicon() {
   const favicon = document.getElementById('tabFavicon');
+  const favicon32 = document.getElementById('tabFavicon32');
   if (!favicon) return;
   const isPlaying = (currentSoundId !== null) || (currentRadioStation !== null && !radioPausedState);
   favicon.href = isPlaying ? 'icons/icon16_active.png' : 'icons/icon16.png';
+  if (favicon32) favicon32.href = isPlaying ? 'icons/icon32_active.png' : 'icons/icon32.png';
 }
 
 // Update MediaSession metadata so OS media keys route to this tab
