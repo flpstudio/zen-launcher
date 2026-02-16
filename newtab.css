@@ -197,7 +197,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: #222222;
   font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   color: #ffffff;
   position: relative;

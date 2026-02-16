@@ -62,17 +62,10 @@ function initBgGrayscale() {
         const on = toggle.checked;
         document.body.classList.toggle('bg-grayscale', on);
         chrome.storage.local.set({ bgGrayscale: on });
-        // Re-apply background filter to combine blur + grayscale
-        const bgImage = document.getElementById('backgroundImage');
-        if (bgImage) {
-          const currentFilter = bgImage.style.filter || '';
-          const hasBlur = currentFilter.match(/blur\((\d+)px\)/);
-          const blurVal = hasBlur ? parseInt(hasBlur[1]) : 0;
-          const filters = [];
-          if (blurVal > 0) filters.push(`blur(${blurVal}px)`);
-          if (on) filters.push('grayscale(1)');
-          bgImage.style.filter = filters.length > 0 ? filters.join(' ') : 'none';
-        }
+        // Re-apply background effects to combine blur + grayscale
+        const dim = parseInt(document.getElementById('bgDimSlider').value);
+        const blur = parseInt(document.getElementById('bgBlurSlider').value);
+        applyBackgroundEffects(dim, blur);
       });
     }
   });
@@ -245,6 +238,7 @@ function applyBackgroundColor(color) {
   const bgElement = document.getElementById('backgroundImage');
   bgElement.style.backgroundImage = 'none';
   bgElement.style.backgroundColor = color;
+  bgElement.style.filter = 'none';
   bgElement.classList.add('loaded');
 }
 
@@ -487,6 +481,11 @@ function initBackgroundRefresh() {
       if (bgGrayscaleSetting) bgGrayscaleSetting.classList.add('disabled');
       // Turn off bg grayscale for solid colors so they stay vibrant
       document.body.classList.remove('bg-grayscale');
+      const bgGsToggle = document.getElementById('bgGrayscaleToggle');
+      if (bgGsToggle && bgGsToggle.checked) {
+        bgGsToggle.checked = false;
+        chrome.storage.local.set({ bgGrayscale: false });
+      }
       applyBackgroundColor(bgType);
       startBackgroundRotation(0);
     }
