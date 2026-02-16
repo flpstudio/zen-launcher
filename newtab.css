@@ -244,8 +244,20 @@ body {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 6px;
+  gap: 2px;
   z-index: 210;
+  padding: 4px;
+  border-radius: 16px;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition: background 0.3s, backdrop-filter 0.3s;
+}
+
+.bg-controls:hover {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .bg-settings-btn,
@@ -259,25 +271,24 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.4;
-  transition: opacity 0.2s;
-  padding: 0;
-}
-
-/* Hide reload button by default, show on hover of the controls area */
-.bg-refresh-btn {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s;
+  transition: opacity 0.3s, background 0.2s;
+  padding: 0;
+  border-radius: 50%;
 }
+
+/* Show both buttons on area hover */
+.bg-controls:hover .bg-settings-btn,
 .bg-controls:hover .bg-refresh-btn {
-  opacity: 0.4;
+  opacity: 1;
   pointer-events: auto;
 }
 
-.bg-settings-btn:hover,
+/* Individual button hover highlight */
+.bg-controls:hover .bg-settings-btn:hover,
 .bg-controls:hover .bg-refresh-btn:hover {
-  opacity: 1;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .bg-settings-btn:active,
@@ -296,8 +307,16 @@ body {
   animation: spin 1s linear infinite;
 }
 
+/* Keep gear visible when settings modal is open */
 .bg-settings-btn.active {
   opacity: 1;
+  pointer-events: auto;
+}
+
+/* Keep gear visible during onboarding so user can discover it */
+body.onboarding-active .bg-settings-btn {
+  opacity: 0.5;
+  pointer-events: auto;
 }
 
 /* ============ Settings Modal ============ */

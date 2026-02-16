@@ -5,12 +5,16 @@ const WOTD_MONTH_NAMES = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
-// Part-of-speech abbreviation mapping to i18n keys
+// Part-of-speech mapping to i18n keys (abbreviations + full words)
 const POS_MAP = {
   'n': 'wotdNoun',
   'v': 'wotdVerb',
   'adj': 'wotdAdj',
   'adv': 'wotdAdv',
+  'noun': 'wotdNoun',
+  'verb': 'wotdVerb',
+  'adjective': 'wotdAdj',
+  'adverb': 'wotdAdv',
 };
 
 // Clean wikitext markup to plain text
@@ -85,20 +89,40 @@ function parseWotdWikitext(wikitext) {
   // Strip any residual HTML tags from the word
   word = word.replace(/<[^>]*>/g, '').trim();
 
-  // Extract part of speech: ''n'' or ''v'' or ''adj'' etc.
-  // Look right after the word pattern for the POS abbreviation
+  // Extract part of speech: ''n'' or ''adjective (qualifier)'' etc.
   const posMatch = wikitext.match(/\]\]'''\s*''([^']+)''/);
-  const posAbbr = posMatch ? posMatch[1].trim() : null;
+  // Strip parenthetical qualifiers like "(chiefly logic, philosophy)"
+  const posAbbr = posMatch ? posMatch[1].replace(/\s*\(.*\)/, '').trim() : null;
 
-  // Extract definitions: lines starting with # (top-level only, not ## or ###)
+  // Extract definitions from # and ## lines in document order
   const lines = wikitext.split('\n');
   const definitions = [];
   for (const line of lines) {
-    // Match lines starting with exactly "# " (not "## " or "### ")
-    if (/^#\s+[^#]/.test(line)) {
-      const cleaned = cleanWikitext(line.replace(/^#\s+/, ''));
-      if (cleaned && cleaned.length > 5) {
-        definitions.push(cleaned);
+    if (!/^#{1,2}\s+/.test(line) || /^#{3,}/.test(line)) continue;
+    let cleaned = cleanWikitext(line.replace(/^#+\s+/, ''));
+    cleaned = cleaned.replace(/^\([^)]*\)\s*/, '').trim();
+    if (cleaned && cleaned.length > 10) {
+      definitions.push(cleaned);
+    }
+  }
+
+  // Fallback: extract from WOTD-rss-description div content
+  if (definitions.length === 0) {
+    const descMatch = wikitext.match(/WOTD-rss-description">\s*([\s\S]*?)(?:\n\||\n<\/div>)/);
+    if (descMatch) {
+      const descText = descMatch[1];
+      // Try extracting from <li> or <ol> items
+      const liMatches = descText.match(/<li[^>]*>([\s\S]*?)<\/li>/gi);
+      if (liMatches) {
+        for (const li of liMatches) {
+          let cleaned = cleanWikitext(li).replace(/^\([^)]*\)\s*/, '').trim();
+          if (cleaned && cleaned.length > 5) definitions.push(cleaned);
+        }
+      }
+      // Or just use the whole description text
+      if (definitions.length === 0) {
+        let cleaned = cleanWikitext(descText).replace(/^\([^)]*\)\s*/, '').trim();
+        if (cleaned && cleaned.length > 5) definitions.push(cleaned);
       }
     }
   }
@@ -172,9 +196,10 @@ function renderWordOfDay(data) {
     return;
   }
 
-  // Translate part of speech
-  const posKey = data.partOfSpeech ? POS_MAP[data.partOfSpeech] : null;
-  const posLabel = posKey ? t(posKey) : (data.partOfSpeech || '');
+  // Translate part of speech (also handle stale cached data with full qualifiers)
+  const rawPos = data.partOfSpeech ? data.partOfSpeech.replace(/\s*\(.*\)/, '').trim() : null;
+  const posKey = rawPos ? POS_MAP[rawPos] : null;
+  const posLabel = posKey ? t(posKey) : (rawPos || '');
 
   // Take first definition
   const definition = data.definitions && data.definitions.length > 0
@@ -197,12 +222,15 @@ async function initWordOfDay() {
   const container = document.getElementById('wotdContent');
   if (!container) return;
 
-  // Show cached data immediately if available and still today
+  // Show cached data immediately if available, still today, and has definitions
   if (hasCachedData('wordOfDay') && isCacheFreshUntilMidnight('wordOfDay')) {
     const cached = getCachedData('wordOfDay');
-    console.log('[WOTD] Showing cached data:', cached?.word);
-    renderWordOfDay(cached);
-    return;
+    if (cached && cached.definitions && cached.definitions.length > 0) {
+      console.log('[WOTD] Showing cached data:', cached?.word);
+      renderWordOfDay(cached);
+      return;
+    }
+    console.log('[WOTD] Cached data incomplete, re-fetching');
   }
 
   // No valid cache, fetch fresh
