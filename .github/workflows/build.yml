@@ -1,0 +1,45 @@
+name: Build Chrome Extension
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version from manifest
+        id: version
+        run: |
+          VERSION=$(jq -r '.version' manifest.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Extension version: $VERSION"
+
+      - name: Create extension ZIP
+        run: |
+          # Create a clean ZIP excluding dev/git files
+          zip -r zen-launcher-${{ steps.version.outputs.version }}.zip . \
+            -x "*.git*" \
+            -x "*.github*" \
+            -x "*.DS_Store" \
+            -x "*.md" \
+            -x "package*.json" \
+            -x "node_modules/*" \
+            -x "*.log"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zen-launcher-${{ steps.version.outputs.version }}
+          path: zen-launcher-${{ steps.version.outputs.version }}.zip
+          retention-days: 90

@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Tab</title>
+  <link rel="stylesheet" href="newtab.css">
+  <link rel="icon" type="image/png" href="icons/icon16.png" id="tabFavicon">
+</head>
+<body class="widgets-loading">
+  <div class="background-image" id="backgroundImage"></div>
+  <div class="background-overlay"></div>
+
+  <!-- Onboarding Overlay -->
+  <div class="onboarding-overlay" id="onboardingOverlay" style="display:none">
+    <div class="onboarding-content">
+      <div class="onboarding-header">
+        <img class="onboarding-icon" src="icons/icon128.png" alt="Zen Launcher">
+        <p class="onboarding-welcome" data-i18n="welcomeTitle">Welcome to Zen Launcher</p>
+      </div>
+      <p class="onboarding-hint" id="onboardingHintText">This is your space. Breathe. Settle in.<br>When you're ready, tap the <span class="onboarding-gear-icon" data-i18n="gearIcon">gear icon</span> below to shape it — choose your widgets, set the mood, and make it feel like home.</p>
+    </div>
+  </div>
+
+  <!-- Background Controls -->
+  <div class="bg-controls" id="bgControls">
+    <!-- Settings Panel is now a modal — see #settingsModal below -->
+    <!-- Settings Button -->
+    <button class="bg-settings-btn" id="bgSettingsBtn" data-i18n-title="backgroundSettings" title="Background settings">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+      </svg>
+    </button>
+    <!-- Refresh Button -->
+    <button class="bg-refresh-btn" id="bgRefreshBtn" data-i18n-title="newBackground" title="New background image">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+      </svg>
+    </button>
+  </div>
+  
+  <!-- Right Panels Container (Clock, Calendar, Meetings, Gmail, Notes) -->
+  <div class="right-panels-container">
+
+  <!-- Clock Panel -->
+  <div class="panel clock-panel" id="clockPanel">
+    <div class="clock-top-row">
+      <button class="clock-settings-btn" id="clockSettingsBtn" data-i18n-title="configureTimezones" title="Configure clock & timezones">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      </button>
+      <div class="world-clocks" id="worldClocks"></div>
+    </div>
+    <div class="clock-settings-panel" id="clockSettingsPanel">
+      <div class="clock-settings-content">
+        <!-- Clock Display Section -->
+        <div class="clock-display-section">
+          <div class="clock-setting-row">
+            <span data-i18n="format12h">12h</span>
+            <label class="widget-toggle-switch">
+              <input type="checkbox" id="clockFormatToggle">
+              <span class="widget-toggle-slider"></span>
+            </label>
+          </div>
+          <div class="clock-setting-row">
+            <span data-i18n="showSeconds">Seconds</span>
+            <label class="widget-toggle-switch">
+              <input type="checkbox" id="clockShowSecondsToggle">
+              <span class="widget-toggle-slider"></span>
+            </label>
+          </div>
+          <div class="clock-setting-row">
+            <span data-i18n="clockShowCalendar">Calendar</span>
+            <label class="widget-toggle-switch">
+              <input type="checkbox" id="clockCalendarToggle" checked>
+              <span class="widget-toggle-slider"></span>
+            </label>
+          </div>
+          <div class="clock-setting-row">
+            <span data-i18n="clockDateFormat">Date format</span>
+            <select id="clockDateFormatSelect" class="clock-date-format-select">
+              <option value="dd Month, yyyy">27 December, 2026</option>
+              <option value="Month dd, yyyy">December 27, 2026</option>
+              <option value="dd/mm/yyyy">27/12/2026</option>
+              <option value="mm/dd/yyyy">12/27/2026</option>
+              <option value="yyyy-mm-dd">2026-12-27</option>
+            </select>
+          </div>
+        </div>
+        <!-- Divider -->
+        <div class="clock-settings-divider"></div>
+        <!-- Timezone Section -->
+        <div class="clock-timezone-section">
+          <div class="tz-list" id="tzList"></div>
+          <button class="tz-add-btn-inline" id="tzAddBtn" data-i18n="addTimezone">+ Add Timezone</button>
+        </div>
+        <div class="clock-settings-footer">
+          <button class="clock-settings-save-btn" id="clockSettingsSaveBtn" data-i18n-title="save" title="Save & Close">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="clock-main-row">
+      <div class="main-clock-wrapper" id="mainClockWrapper">
+        <div class="main-clock" id="clock">00:00</div>
+        <div class="clock-extras">
+          <span class="clock-ampm" id="clockAmPm"></span>
+          <span class="clock-seconds" id="clockSeconds"></span>
+        </div>
+      </div>
+    </div>
+    <div class="clock-date-area" id="clockDateArea">
+      <div class="clock-calendar" id="clockCalendar"></div>
+      <div class="clock-date-text" id="clockDateText"></div>
+    </div>
+  </div>
+
+  <!-- Calendar/Gmail Panel (Unified) -->
+  <div class="calendar-panel" id="calendarPanel">
+    <!-- Notes/Todo Widget -->
+    <div class="notes-todo-widget" id="notesTodoWidget">
+      <div class="nt-header">
+        <div class="nt-tabs">
+          <button class="nt-tab active" data-tab="notes" data-i18n="notesTab">Notes</button>
+          <button class="nt-tab" data-tab="todo" data-i18n="todoTab">Todo</button>
+          <button class="nt-tab" data-tab="board" data-i18n="boardTab">Board</button>
+        </div>
+        <div class="nt-search-wrap">
+          <input type="text" class="nt-search" id="ntSearch" data-i18n-placeholder="searchPlaceholder" placeholder="Search..." autocomplete="off">
+          <span class="nt-search-count" id="ntSearchCount"></span>
+        </div>
+      </div>
+      <!-- Notes panel -->
+      <div class="nt-panel nt-notes-panel active" id="ntNotesPanel">
+        <div class="nt-notes-container">
+          <div class="nt-notes-highlights" id="ntNotesHighlights"></div>
+          <textarea class="nt-notes-area" id="ntNotesArea" data-i18n-placeholder="notesPlaceholder" placeholder="Type your notes here..."></textarea>
+        </div>
+      </div>
+      <!-- Todo panel -->
+      <div class="nt-panel nt-todo-panel" id="ntTodoPanel">
+        <div class="nt-todo-list" id="ntTodoList"></div>
+        <div class="nt-todo-add">
+          <input type="text" class="nt-todo-input" id="ntTodoInput" data-i18n-placeholder="addTaskPlaceholder" placeholder="Add a task..." autocomplete="off">
+          <input type="date" class="nt-todo-date" id="ntTodoDate">
+          <button class="nt-todo-add-btn" id="ntTodoAddBtn" data-i18n-title="addTaskTitle" title="Add task (Alt+Shift+N)">+</button>
+        </div>
+      </div>
+      <!-- Board panel -->
+      <div class="nt-panel nt-board-panel" id="ntBoardPanel">
+        <div class="nt-board" id="ntBoard">
+          <div class="nt-board-col" data-col="backlog">
+            <div class="nt-board-col-title" style="border-bottom-color: rgba(148,163,184,0.6)" data-i18n="backlog">Backlog</div>
+            <div class="nt-board-col-cards"></div>
+          </div>
+          <div class="nt-board-col" data-col="todo">
+            <div class="nt-board-col-title" style="border-bottom-color: rgba(96,165,250,0.6)" data-i18n="toDo">To Do</div>
+            <div class="nt-board-col-cards"></div>
+          </div>
+          <div class="nt-board-col" data-col="inprogress">
+            <div class="nt-board-col-title" style="border-bottom-color: rgba(251,191,36,0.6)" data-i18n="inProgress">In Progress</div>
+            <div class="nt-board-col-cards"></div>
+          </div>
+          <div class="nt-board-col" data-col="done">
+            <div class="nt-board-col-title" style="border-bottom-color: rgba(74,222,128,0.6)" data-i18n="done">Done</div>
+            <div class="nt-board-col-cards"></div>
+          </div>
+        </div>
+        <div class="nt-board-add">
+          <input type="text" class="nt-todo-input" id="ntBoardInput" data-i18n-placeholder="addCardPlaceholder" placeholder="Add card..." autocomplete="off">
+          <input type="date" class="nt-todo-date" id="ntBoardDate">
+          <button class="nt-todo-add-btn" id="ntBoardAddBtn" data-i18n-title="addCardTitle" title="Add card">+</button>
+        </div>
+      </div>
+    </div>
+    <!-- Gmail Header -->
+    <div class="gmail-header" id="gmailHeader">
+      <svg class="gmail-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+      </svg>
+      <span class="gmail-title" data-i18n="gmail">Gmail</span>
+      <button class="gmail-refresh" id="gmailRefresh" data-i18n-title="refresh" title="Refresh">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        </svg>
+      </button>
+      <button class="gmail-meet" id="gmailMeet" data-i18n-title="instantMeeting" title="Instant Meeting (Alt+Shift+M)">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+        </svg>
+      </button>
+    </div>
+    <!-- Meetings Section -->
+    <div class="meetings-section" id="meetingsSection">
+      <div class="meetings-loading" data-i18n="loadingMeetings">Loading meetings...</div>
+    </div>
+    <!-- Gmail Content (Emails) -->
+    <div class="gmail-content" id="gmailContent">
+      <div class="gmail-loading" data-i18n="loading">Loading...</div>
+    </div>
+    <button class="gmail-signin" id="gmailSignIn" style="display: none;" data-i18n="signInGoogle">
+      Sign in with Google
+    </button>
+  </div>
+  </div><!-- /right-panels-container -->
+
+  <!-- Middle Panels Container (Life Counter, Sounds, HN, Chat) -->
+  <div class="middle-panels-container">
+    <div class="life-counter" id="lifeCounter">
+      <!-- Memento mori state (no birthday set) -->
+      <div class="life-counter-memento-state" id="lifeCounterMementoState">
+        <span class="life-counter-memento" data-i18n="lifeCounterMemento">Memento mori</span>
+        <button class="life-counter-settings-btn" id="lifeCounterSettingsBtnMemento">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        </button>
+      </div>
+      
+      <!-- Active state: progressbar with settings gear -->
+      <div class="life-counter-active" id="lifeCounterActive" style="display: none;">
+        <span class="life-counter-percentage" id="lifeCounterPercentage">0%</span>
+        <div class="life-counter-bar" id="lifeCounterBar">
+          <div class="life-counter-progress" id="lifeCounterProgress"></div>
+          <div class="life-counter-tooltip" id="lifeCounterTooltip"></div>
+        </div>
+        <button class="life-counter-settings-btn" id="lifeCounterSettingsBtn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        </button>
+      </div>
+      
+      <!-- Settings panel -->
+      <div class="life-counter-settings-panel" id="lifeCounterSettingsPanel">
+        <div class="life-counter-settings-content">
+          <div class="lc-setting-row">
+            <label data-i18n="lifeCounterBirthday">Birthday</label>
+            <input type="date" id="lifeCounterBirthdate">
+          </div>
+          <div class="lc-setting-row">
+            <label data-i18n="lifeCounterExpectancy">Life Expectancy</label>
+            <input type="range" id="lifeCounterExpectancy" min="35" max="99" value="80">
+            <span class="lc-expectancy-value"><span id="lifeCounterExpectancyValue">80</span><span data-i18n="lifeCounterYearsShort">y</span></span>
+          </div>
+          <div class="lc-setting-actions">
+            <button class="life-counter-save-btn" id="lifeCounterSaveBtn" data-i18n-title="save" title="Save">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+            </button>
+            <button class="life-counter-close-btn" id="lifeCounterCloseBtn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sounds-bar-wrap" id="soundsBarWrap">
+      <div class="sounds-bar" id="soundsBar">
+        <div class="sounds-bar-scroll" id="soundsBarScroll">
+          <!-- Sound items will be inserted here -->
+        </div>
+        <div class="radio-panel" id="radioPanel">
+          <div class="radio-search-wrap">
+            <input type="text" class="radio-search-input" id="radioSearchInput" data-i18n-placeholder="searchRadioPlaceholder" placeholder="Search radio stations..." autocomplete="off">
+          </div>
+          <div class="radio-panel-stations">
+            <div class="radio-section radio-recent" id="radioRecent"></div>
+            <div class="radio-section radio-presets" id="radioPresets"></div>
+            <div class="radio-section radio-results" id="radioResults"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sounds-controls" id="soundsControls">
+        <button class="sounds-stop-btn" id="soundsStopBtn" data-i18n-title="stopLabel" title="Stop">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+        </button>
+        <input type="range" class="sounds-bar-volume" id="soundsBarVolume" min="0" max="100" value="50" data-i18n-title="volume" title="Volume">
+        <span class="sounds-volume-label" id="soundsVolumeLabel">50%</span>
+        <svg class="sounds-volume-icon" id="soundsVolumeIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0012 8.14v7.72A4.49 4.49 0 0016.5 12zM12 3.23v2.06a6.51 6.51 0 010 13.42v2.06A8.51 8.51 0 0020.5 12 8.51 8.51 0 0012 3.23z"/></svg>
+      </div>
+    </div>
+    <div class="hn-widget" id="hnWidget">
+      <div class="hn-list" id="hnList">
+        <div class="hn-loading" data-i18n="loading">Loading...</div>
+      </div>
+    </div>
+    <div class="ai-chat-panel" id="aiChatPanel">
+      <div class="ai-chat-top-actions">
+        <button class="ai-chat-settings" id="aiChatSettings" data-i18n-title="apiSettings" title="API Settings">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        </button>
+        <button class="ai-chat-clear" id="aiChatClear" data-i18n-title="clearConversation" title="Clear conversation (Alt+Shift+K)">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        </button>
+        <button class="ai-chat-open-gpt" id="aiChatOpenGpt" data-i18n-title="openChatGpt" title="Open ChatGPT">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+        </button>
+      </div>
+      <div class="ai-chat-settings-panel" id="aiChatSettingsPanel">
+        <div class="ai-chat-settings-content">
+          <label for="aiApiKeyInput" data-i18n="openaiApiKey">OpenAI API Key:</label>
+          <div class="ai-settings-input-group">
+            <input type="password" id="aiApiKeyInput" placeholder="sk-...">
+            <button id="aiSettingsSave" class="ai-settings-save-btn" data-i18n-title="save" title="Save">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+            </button>
+            <button id="aiSettingsClear" class="ai-settings-clear-btn" data-i18n-title="clearKey" title="Clear Key">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+            </button>
+          </div>
+          <p class="ai-settings-hint"><span data-i18n="getApiKey">Get your API key from</span> <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI</a></p>
+        </div>
+      </div>
+      <div class="ai-chat-messages" id="aiChatMessages">
+        <!-- Messages will be inserted here -->
+      </div>
+      <div class="ai-chat-input-container">
+        <input type="text" class="ai-chat-input" id="aiChatInput" data-i18n-placeholder="askAnything" placeholder="Ask me anything..." autocomplete="off">
+        <button class="ai-chat-send" id="aiChatSend" data-i18n-title="send" title="Send">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div><!-- /middle-panels-container -->
+
+  <!-- Email Preview Modal -->
+  <div class="email-modal" id="emailModal">
+    <div class="email-modal-content">
+      <div class="email-modal-header">
+        <div class="email-modal-subject" id="emailModalSubject"></div>
+        <button class="email-modal-close" id="emailModalClose">&times;</button>
+      </div>
+      <div class="email-modal-meta" id="emailModalMeta"></div>
+      <div class="email-modal-attachments" id="emailModalAttachments"></div>
+      <div class="email-modal-body" id="emailModalBody">
+        <div class="gmail-loading" data-i18n="loading">Loading...</div>
+      </div>
+      <div class="email-modal-actions">
+        <button class="email-action-btn email-action-open" id="emailOpenBtn" data-i18n-title="openInGmail" title="Open in Gmail">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+          <span data-i18n="open">Open</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Icon Picker Popup -->
+  <div class="icon-picker" id="iconPicker">
+    <div class="icon-picker-grid" id="iconPickerGrid"></div>
+  </div>
+
+  <!-- Left Panels Container -->
+  <div class="left-panels-container">
+    <!-- RSS Feed Panel -->
+    <div class="panel flp-today-panel" id="flpTodayPanel">
+      <div class="flp-today-header">
+        <button class="rss-icon-btn" id="rssSettingsBtn" data-i18n-title="configureRss" title="Configure RSS feed">
+          <svg class="rss-icon rss-icon-default" viewBox="0 0 24 24" fill="currentColor"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1Z"/></svg>
+          <svg class="rss-icon rss-icon-gear" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        </button>
+        <span class="flp-today-title" id="rssFeedTitle" data-i18n="rssFeed">RSS Feed</span>
+        <span class="flp-today-date" id="flpTodayDate"></span>
+      </div>
+      <div class="rss-settings-panel" id="rssSettingsPanel">
+        <div class="rss-settings-content">
+          <label for="rssUrlInput" data-i18n="rssFeedUrl">RSS Feed URL:</label>
+          <div class="rss-settings-input-group">
+            <input type="url" id="rssUrlInput" placeholder="https://example.com/feed.xml">
+            <button id="rssSettingsSave" class="rss-settings-save-btn" data-i18n-title="save" title="Save">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+            </button>
+            <button id="rssSettingsReset" class="rss-settings-reset-btn" data-i18n-title="resetToDefault" title="Reset to Default">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+            </button>
+          </div>
+          <div class="rss-presets">
+            <div class="rss-presets-title">NY Times</div>
+            <div class="rss-presets-grid" id="rssPresetsGrid"></div>
+          </div>
+        </div>
+      </div>
+      <div class="flp-today-content" id="flpTodayContent">
+        <div class="flp-today-loading" data-i18n="loading">Loading...</div>
+      </div>
+    </div>
+    
+    <!-- Popular Sites Widget -->
+    <div class="panel popular-sites-panel" id="popularSitesPanel">
+      <div class="popular-sites-tabs">
+        <button class="sites-tab active" data-tab="topSites" data-i18n="topSites">Top Sites</button>
+        <button class="sites-tab" data-tab="bookmarks" data-i18n="bookmarks">Bookmarks</button>
+        <button class="sites-tab" data-tab="news" data-i18n="newsSites">News</button>
+      </div>
+      <div class="popular-sites-content" id="popularSitesContent">
+        <div class="popular-sites-grid" id="popularSitesGrid">
+          <div class="popular-sites-loading" data-i18n="loading">Loading...</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Weather Widget -->
+    <div class="panel weather-panel" id="weatherPanel">
+      <div class="weather-content" id="weatherContent">
+        <div class="weather-loading" data-i18n="detectingLocation">Detecting location...</div>
+      </div>
+    </div>
+    
+    <!-- Asset Prices Widget -->
+    <div class="panel assets-panel" id="assetsPanel">
+      <div class="assets-header">
+        <svg class="assets-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/>
+        </svg>
+        <span class="assets-title" data-i18n="assets">Assets</span>
+        <button class="assets-settings-btn" id="assetsSettingsBtn" data-i18n-title="configureAssets" title="Configure assets">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        </button>
+      </div>
+      <div class="assets-settings-panel" id="assetsSettingsPanel">
+        <div class="assets-settings-content">
+          <label for="assetsSymbolsInput" data-i18n="assetsHint">Yahoo Finance symbols (one per line):</label>
+          <div class="assets-settings-input-group">
+            <textarea id="assetsSymbolsInput" rows="4" placeholder="^GSPC&#10;GC=F&#10;BTC-USD"></textarea>
+            <div class="assets-settings-actions">
+              <button id="assetsSettingsSave" class="assets-settings-save-btn" data-i18n-title="save" title="Save">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+              </button>
+              <button id="assetsSettingsReset" class="assets-settings-reset-btn" data-i18n-title="resetToDefault" title="Reset to Default">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="assets-settings-examples">
+            <small class="assets-settings-hint"><span data-i18n="assetsExamples">Examples: ^GSPC (S&P 500), GC=F (Gold), BTC-USD, RUBUSD=X</span></small>
+            <a href="https://finance.yahoo.com/lookup" target="_blank" class="assets-help-link">🔍 <span data-i18n="findSymbols">Find symbols on Yahoo Finance</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="assets-grid" id="assetsGrid">
+        <div class="assets-loading" data-i18n="loading">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Fear/Greed Index Widget -->
+    <div class="panel fear-greed-panel" id="fearGreedPanel">
+      <div class="fg-gauges">
+        <div class="fg-gauge" id="fgTraditional">
+          <div class="fg-gauge-label" data-i18n="traditional">Traditional</div>
+          <svg class="fg-arc" viewBox="0 0 120 80"></svg>
+          <div class="fg-score">--</div>
+          <div class="fg-rating">--</div>
+          <div class="fg-change"></div>
+        </div>
+        <div class="fg-gauge" id="fgCrypto">
+          <div class="fg-gauge-label" data-i18n="crypto">Crypto</div>
+          <svg class="fg-arc" viewBox="0 0 120 80"></svg>
+          <div class="fg-score">--</div>
+          <div class="fg-rating">--</div>
+          <div class="fg-change"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Word of the Day Widget -->
+    <div class="panel wotd-panel" id="wotdPanel">
+      <div class="wotd-content" id="wotdContent">
+        <div class="wotd-loading" data-i18n="loading">Loading...</div>
+      </div>
+    </div>
+  </div>
+    
+  <!-- This Day in History -->
+  <div class="news-ticker" id="newsTicker">
+    <div class="news-ticker-content" id="newsTickerContent">
+      <span class="news-loading" data-i18n="loadingNews">Loading company history...</span>
+    </div>
+    <!-- System Stats Widget -->
+    <div class="system-stats" id="systemStats">
+      <div class="stat-item" id="cpuStat" data-i18n-title="cpuUsage" title="CPU Usage">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-bar"><div class="stat-fill" id="cpuFill"></div></div>
+        <div class="stat-value" id="cpuValue">--%</div>
+      </div>
+      <div class="stat-item" id="memStat" data-i18n-title="memoryUsage" title="Memory Usage">
+        <div class="stat-icon">🧠</div>
+        <div class="stat-bar"><div class="stat-fill" id="memFill"></div></div>
+        <div class="stat-value" id="memValue">--%</div>
+      </div>
+      <div class="stat-item" id="batteryStat" data-i18n-title="batteryLevel" title="Battery Level">
+        <div class="stat-icon">🔋</div>
+        <div class="stat-bar"><div class="stat-fill" id="batteryFill"></div></div>
+        <div class="stat-value" id="batteryValue">--%</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Settings Modal -->
+  <div class="settings-modal" id="settingsModal">
+    <div class="settings-modal-content">
+      <div class="settings-modal-header">
+        <div class="settings-tabs">
+          <button class="settings-tab active" data-stab="widgets" data-i18n="widgetsTab">Widgets</button>
+          <button class="settings-tab" data-stab="visuals" data-i18n="appearanceTab">Appearance</button>
+          <button class="settings-tab" data-stab="shortcuts" data-i18n="shortcutsTab">Shortcuts</button>
+          <button class="settings-tab" data-stab="data" data-i18n="dataTab">Data</button>
+        </div>
+        <button class="settings-modal-close" id="settingsModalClose">&times;</button>
+      </div>
+      <div class="settings-modal-body">
+        <!-- Visuals & Language tab -->
+        <div class="settings-tab-panel" data-stab-panel="visuals">
+          <div class="bg-setting mood-preset-row">
+            <div class="mood-preset-options">
+              <label class="widget-preset-option">
+                <input type="radio" name="moodPreset" value="clear">
+                <span class="widget-preset-label" data-i18n="moodClear">Clear</span>
+              </label>
+              <label class="widget-preset-option">
+                <input type="radio" name="moodPreset" value="cozy">
+                <span class="widget-preset-label" data-i18n="moodCozy">Cozy</span>
+              </label>
+              <label class="widget-preset-option">
+                <input type="radio" name="moodPreset" value="focus">
+                <span class="widget-preset-label" data-i18n="moodFocus">Focus</span>
+              </label>
+              <label class="widget-preset-option">
+                <input type="radio" name="moodPreset" value="cinematic">
+                <span class="widget-preset-label" data-i18n="moodCinematic">Cinematic</span>
+              </label>
+              <label class="widget-preset-option">
+                <input type="radio" name="moodPreset" value="moodCustom">
+                <span class="widget-preset-label" data-i18n="presetCustom">Custom</span>
+              </label>
+            </div>
+          </div>
+          <div class="widget-group-label" data-i18n="backgroundAppearance">Background</div>
+          <div class="bg-setting">
+            <label data-i18n="dim">Dim</label>
+            <input type="range" id="bgDimSlider" min="0" max="80" value="50">
+            <span id="bgDimValue">50%</span>
+          </div>
+          <div class="bg-setting">
+            <label data-i18n="blur">Blur</label>
+            <input type="range" id="bgBlurSlider" min="0" max="20" value="0">
+            <span id="bgBlurValue">0px</span>
+          </div>
+          <div class="bg-setting">
+            <label data-i18n="autoChange">Auto Change</label>
+            <input type="range" id="bgRotateSlider" min="0" max="3" step="1" value="3">
+            <span id="bgRotateValue">1 day</span>
+          </div>
+          <div class="bg-setting">
+            <label data-i18n="zenPulse">Zen Pulse</label>
+            <label class="widget-toggle-switch">
+              <input type="checkbox" id="zenPulseToggle">
+              <span class="widget-toggle-slider"></span>
+            </label>
+          </div>
+          <div class="bg-type-grid-wrapper">
+            <div class="bg-type-grid">
+              <label class="bg-type-option active" data-bg="image">
+                <div class="bg-type-swatch bg-type-image-swatch">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                </div>
+                <span class="bg-type-name" data-i18n="bgImage">Image</span>
+              </label>
+              <label class="bg-type-option" data-bg="#0f0f1a">
+                <div class="bg-type-swatch" style="background:#0f0f1a"></div>
+                <span class="bg-type-name" data-i18n="bgMidnight">Midnight</span>
+              </label>
+              <label class="bg-type-option" data-bg="#1a1a1a">
+                <div class="bg-type-swatch" style="background:#1a1a1a"></div>
+                <span class="bg-type-name" data-i18n="bgCharcoal">Charcoal</span>
+              </label>
+              <label class="bg-type-option" data-bg="#4a5568">
+                <div class="bg-type-swatch" style="background:#4a5568"></div>
+                <span class="bg-type-name" data-i18n="bgSlate">Slate</span>
+              </label>
+              <label class="bg-type-option" data-bg="#0a1628">
+                <div class="bg-type-swatch" style="background:#0a1628"></div>
+                <span class="bg-type-name" data-i18n="bgDeepSea">Deep Sea</span>
+              </label>
+              <label class="bg-type-option" data-bg="#1a3a1a">
+                <div class="bg-type-swatch" style="background:#1a3a1a"></div>
+                <span class="bg-type-name" data-i18n="bgForest">Forest</span>
+              </label>
+              <label class="bg-type-option" data-bg="#4a1525">
+                <div class="bg-type-swatch" style="background:#4a1525"></div>
+                <span class="bg-type-name" data-i18n="bgBurgundy">Burgundy</span>
+              </label>
+              <label class="bg-type-option" data-bg="#0a0a2e">
+                <div class="bg-type-swatch" style="background:#0a0a2e"></div>
+                <span class="bg-type-name" data-i18n="bgNavy">Navy</span>
+              </label>
+              <label class="bg-type-option" data-bg="#3a2060">
+                <div class="bg-type-swatch" style="background:#3a2060"></div>
+                <span class="bg-type-name" data-i18n="bgIndigo">Indigo</span>
+              </label>
+              <label class="bg-type-option" data-bg="#2c1a0e">
+                <div class="bg-type-swatch" style="background:#2c1a0e"></div>
+                <span class="bg-type-name" data-i18n="bgEspresso">Espresso</span>
+              </label>
+              <label class="bg-type-option" data-bg="#5a4a30">
+                <div class="bg-type-swatch" style="background:#5a4a30"></div>
+                <span class="bg-type-name" data-i18n="bgSand">Sand</span>
+              </label>
+              <label class="bg-type-option" data-bg="custom">
+                <div class="bg-type-swatch bg-type-custom-swatch" style="background:#3a3a4a">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77c-.28 0-.5.22-.5.5 0 .12.05.23.13.33.41.47.64 1.06.64 1.67A2.5 2.5 0 0 1 12 22zm0-18c-4.41 0-8 3.59-8 8s3.59 8 8 8c.28 0 .5-.22.5-.5a.54.54 0 0 0-.14-.35c-.41-.46-.63-1.05-.63-1.65a2.5 2.5 0 0 1 2.5-2.5H16c2.21 0 4-1.79 4-4 0-3.86-3.59-7-8-7z"/><circle cx="6.5" cy="11.5" r="1.5"/><circle cx="9.5" cy="7.5" r="1.5"/><circle cx="14.5" cy="7.5" r="1.5"/><circle cx="17.5" cy="11.5" r="1.5"/></svg>
+                </div>
+                <span class="bg-type-name bg-type-custom-label" data-i18n="bgCustom">Custom</span>
+              </label>
+            </div>
+            <div class="bg-custom-picker" id="bgCustomPicker" style="display:none">
+              <span class="bg-custom-picker-close" id="bgCustomPickerClose">&times;</span>
+              <canvas id="bgCustomCanvas" width="280" height="120"></canvas>
+            </div>
+          </div>
+          <div class="widget-group-label" data-i18n="widgetAppearance">Widgets</div>
+          <div class="bg-setting">
+            <label data-i18n="widgetDim">Dim</label>
+            <input type="range" id="widgetOpacitySlider" min="15" max="55" value="25">
+            <span id="widgetOpacityValue">25%</span>
+          </div>
+          <div class="bg-setting">
+            <label data-i18n="widgetBlur">Blur</label>
+            <input type="range" id="widgetBlurSlider" min="0" max="20" value="0">
+            <span id="widgetBlurValue">0px</span>
+          </div>
+          <div class="bg-setting">
+            <label data-i18n="widgetGrayscale">Grayscale idle</label>
+            <label class="widget-toggle-switch">
+              <input type="checkbox" id="widgetGrayscaleToggle">
+              <span class="widget-toggle-slider"></span>
+            </label>
+          </div>
+          <div class="column-align-schematic">
+            <div class="column-align-col" data-align-column="left">
+              <span class="column-align-label" data-i18n="alignLeftColumn">Left</span>
+              <div class="column-align-box">
+                <button class="align-btn active" data-align="top" data-i18n="alignTop">Top</button>
+                <button class="align-btn" data-align="center" data-i18n="alignCenter">Center</button>
+                <button class="align-btn" data-align="bottom" data-i18n="alignBottom">Bottom</button>
+              </div>
+            </div>
+            <div class="column-align-col" data-align-column="middle">
+              <span class="column-align-label" data-i18n="alignMiddleColumn">Middle</span>
+              <div class="column-align-box">
+                <button class="align-btn active" data-align="top" data-i18n="alignTop">Top</button>
+                <button class="align-btn" data-align="center" data-i18n="alignCenter">Center</button>
+                <button class="align-btn" data-align="bottom" data-i18n="alignBottom">Bottom</button>
+              </div>
+            </div>
+            <div class="column-align-col" data-align-column="right">
+              <span class="column-align-label" data-i18n="alignRightColumn">Right</span>
+              <div class="column-align-box">
+                <button class="align-btn active" data-align="top" data-i18n="alignTop">Top</button>
+                <button class="align-btn" data-align="center" data-i18n="alignCenter">Center</button>
+                <button class="align-btn" data-align="bottom" data-i18n="alignBottom">Bottom</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Widgets tab -->
+        <div class="settings-tab-panel active" data-stab-panel="widgets">
+          <div class="widget-presets">
+            <div class="widget-group-label" data-i18n="layoutPreset">Layout Preset</div>
+            <div class="widget-preset-options">
+              <label class="widget-preset-option">
+                <input type="radio" name="widgetPreset" value="zen" checked>
+                <span class="widget-preset-label" data-i18n="presetZen">Zen</span>
+              </label>
+              <label class="widget-preset-option">
+                <input type="radio" name="widgetPreset" value="starter">
+                <span class="widget-preset-label" data-i18n="presetStarter">Starter</span>
+              </label>
+              <label class="widget-preset-option">
+                <input type="radio" name="widgetPreset" value="productive">
+                <span class="widget-preset-label" data-i18n="presetProductive">Productive</span>
+              </label>
+              <label class="widget-preset-option">
+                <input type="radio" name="widgetPreset" value="fullDeck">
+                <span class="widget-preset-label" data-i18n="presetFullDeck">Full Deck</span>
+              </label>
+              <label class="widget-preset-option">
+                <input type="radio" name="widgetPreset" value="explorer">
+                <span class="widget-preset-label" data-i18n="presetExplorer">Explorer</span>
+              </label>
+              <label class="widget-preset-option">
+                <input type="radio" name="widgetPreset" value="custom">
+                <span class="widget-preset-label" data-i18n="presetCustom">Custom</span>
+              </label>
+            </div>
+          </div>
+          <div class="widget-toggle-row widget-toggle-all">
+            <span class="widget-toggle-label" data-i18n="allWidgets">All Widgets</span>
+            <label class="widget-toggle-switch"><input type="checkbox" id="toggleAllWidgets"><span class="widget-toggle-slider"></span></label>
+          </div>
+          <div class="widget-group-label" data-i18n="leftPanel">Left Panel</div>
+          <div class="widget-toggle-row" data-widget="rssFeed">
+            <span class="widget-toggle-label" data-i18n="widgetRssFeed">RSS Feed</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
+          <div class="widget-toggle-row" data-widget="popularSites">
+            <span class="widget-toggle-label" data-i18n="widgetPopularSites">Popular Sites</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
+          <div class="widget-toggle-row" data-widget="weather">
+            <span class="widget-toggle-label" data-i18n="widgetWeather">Weather</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
+          <div class="widget-toggle-row" data-widget="assets">
+            <span class="widget-toggle-label" data-i18n="widgetAssets">Assets</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
+          <div class="widget-toggle-row" data-widget="fearGreed">
+            <span class="widget-toggle-label" data-i18n="widgetFearGreed">Fear/Greed Index</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
+          <div class="widget-toggle-row" data-widget="wordOfDay">
+            <span class="widget-toggle-label" data-i18n="widgetWordOfDay">Word of the Day</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
+          <div class="widget-group-label" data-i18n="centerPanel">Center</div>
+          <div class="widget-toggle-row" data-widget="lifeCounter">
+            <span class="widget-toggle-label" data-i18n="widgetLifeCounter">Life Counter</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
+          <div class="widget-toggle-row" data-widget="soundsBar">
+            <span class="widget-toggle-label" data-i18n="widgetSoundsBar">Sounds Bar</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
+          <div class="widget-toggle-row" data-widget="hackerNews">
+            <span class="widget-toggle-label" data-i18n="widgetHackerNews">Hacker News</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
+          <div class="widget-toggle-row" data-widget="aiChat">
+            <span class="widget-toggle-label" data-i18n="widgetAiChat">AI Chat</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
+          <div class="widget-group-label" data-i18n="rightPanel">Right Panel</div>
+          <div class="widget-toggle-row" data-widget="notesTodo">
+            <span class="widget-toggle-label" data-i18n="widgetNotesTodo">Notes / Todo</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
+          <div class="widget-toggle-row" data-widget="gmail">
+            <span class="widget-toggle-label" data-i18n="widgetGmailMeetings">Gmail &amp; Meetings</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
+          <div class="widget-group-label" data-i18n="bottomPanel">Bottom</div>
+          <div class="widget-toggle-row" data-widget="newsTicker">
+            <span class="widget-toggle-label" data-i18n="widgetHistoryTicker">This Day in History</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
+        </div>
+        <!-- Shortcuts tab -->
+        <div class="settings-tab-panel" data-stab-panel="shortcuts">
+          <div class="shortcuts-section">
+            <div class="shortcuts-group-label" data-i18n="notesTodoBoardGroup">Notes / Todo / Board</div>
+            <div class="shortcuts-row"><kbd>Alt+Shift+1</kbd> <span data-i18n="shortcutNotesTab">Notes tab</span></div>
+            <div class="shortcuts-row"><kbd>Alt+Shift+2</kbd> <span data-i18n="shortcutTodoTab">Todo tab</span></div>
+            <div class="shortcuts-row"><kbd>Alt+Shift+3</kbd> <span data-i18n="shortcutBoardTab">Board tab</span></div>
+            <div class="shortcuts-row"><kbd>Alt+Shift+F</kbd> <span data-i18n="shortcutSearch">Search</span></div>
+            <div class="shortcuts-row"><kbd>Alt+Shift+N</kbd> <span data-i18n="shortcutNewTodo">New todo</span></div>
+            <div class="shortcuts-row"><kbd>Enter</kbd> <span data-i18n="shortcutFindNext">Find next (in notes search)</span></div>
+          </div>
+          <div class="shortcuts-section">
+            <div class="shortcuts-group-label" data-i18n="aiChatGroup">AI Chat</div>
+            <div class="shortcuts-row"><kbd>Alt+Shift+K</kbd> <span data-i18n="shortcutClearConvo">Clear conversation</span></div>
+          </div>
+          <div class="shortcuts-section">
+            <div class="shortcuts-group-label" data-i18n="soundbarGroup">Soundbar</div>
+            <div class="shortcuts-row"><kbd>Alt+Shift+P</kbd> <span data-i18n="shortcutToggleRadio">Play / Stop radio</span></div>
+          </div>
+          <div class="shortcuts-section">
+            <div class="shortcuts-group-label" data-i18n="gmailGroup">Gmail</div>
+            <div class="shortcuts-row"><kbd>Alt+Shift+M</kbd> <span data-i18n="shortcutInstantMeeting">Instant Meeting</span></div>
+          </div>
+          <div class="shortcuts-section">
+            <div class="shortcuts-group-label" data-i18n="generalGroup">General</div>
+            <div class="shortcuts-row"><kbd>Alt+Shift+Z</kbd> <span data-i18n="shortcutZenPulse">Trigger Zen Pulse</span></div>
+            <div class="shortcuts-row"><kbd>Esc</kbd> <span data-i18n="shortcutCloseModal">Close modal / clear search</span></div>
+          </div>
+        </div>
+        <!-- Data tab -->
+        <div class="settings-tab-panel" data-stab-panel="data">
+          <p class="settings-data-description" data-i18n="resetDescription">Reset all settings, cached data, and saved preferences to their defaults. This will reload the page.</p>
+          <button class="settings-reset-btn" id="resetAllDataBtn" data-i18n="resetAllData">Reset All Data</button>
+        </div>
+      </div>
+      <div class="settings-lang-picker" id="settingsLangPicker">
+        <div class="lang-picker-grid" id="langPickerGrid">
+          <button class="lang-picker-item" data-lang="en"><span class="lang-flag">🇺🇸</span><span class="lang-name">English</span></button>
+          <button class="lang-picker-item" data-lang="es"><span class="lang-flag">🇪🇸</span><span class="lang-name">Español</span></button>
+          <button class="lang-picker-item" data-lang="fr"><span class="lang-flag">🇫🇷</span><span class="lang-name">Français</span></button>
+          <button class="lang-picker-item" data-lang="de"><span class="lang-flag">🇩🇪</span><span class="lang-name">Deutsch</span></button>
+          <button class="lang-picker-item" data-lang="it"><span class="lang-flag">🇮🇹</span><span class="lang-name">Italiano</span></button>
+          <button class="lang-picker-item" data-lang="pt"><span class="lang-flag">🇧🇷</span><span class="lang-name">Português</span></button>
+          <button class="lang-picker-item" data-lang="ru"><span class="lang-flag">🇷🇺</span><span class="lang-name">Русский</span></button>
+          <button class="lang-picker-item" data-lang="ja"><span class="lang-flag">🇯🇵</span><span class="lang-name">日本語</span></button>
+          <button class="lang-picker-item" data-lang="ko"><span class="lang-flag">🇰🇷</span><span class="lang-name">한국어</span></button>
+          <button class="lang-picker-item" data-lang="zh"><span class="lang-flag">🇨🇳</span><span class="lang-name">中文</span></button>
+        </div>
+      </div>
+      <div class="settings-app-info" id="settingsAppInfo" style="display:none;">
+        <span class="settings-app-version" id="appVersionLabel"></span>
+        <span class="settings-app-email" id="appUserEmail"></span>
+      </div>
+      <div class="settings-modal-footer">
+        <button class="settings-google-signin" id="googleSignInHover" style="display: none;" data-i18n-title="signInWithGoogle" title="Sign in with Google">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/></svg>
+          <span data-i18n="signInWithGoogle">Sign in with Google</span>
+        </button>
+        <button class="settings-google-signout" id="googleSignOutBtn" style="display: none;">
+          <span class="signout-user-name" id="signoutUserName"></span>
+          <span class="signout-hover-label">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            <span data-i18n="signOutLabel">Sign out</span>
+          </span>
+        </button>
+        <button class="settings-lang-btn" id="settingsLangBtn" data-i18n-title="language" title="Language">
+          <span class="lang-btn-flag" id="langBtnFlag"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core: i18n, utilities, cache -->
+  <script src="js/i18n.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/cache.js"></script>
+
+  <!-- Widgets -->
+  <script src="js/clock.js"></script>
+  <script src="js/background.js"></script>
+  <script src="js/gmail.js"></script>
+  <script src="js/news.js"></script>
+  <script src="js/widgets.js"></script>
+  <script src="js/ai-chat.js"></script>
+  <script src="js/weather.js"></script>
+  <script src="js/life-counter.js"></script>
+  <script src="js/assets.js"></script>
+  <script src="js/rss.js"></script>
+  <script src="js/fear-greed.js"></script>
+  <script src="js/word-of-day.js"></script>
+  <script src="js/notes-todo.js"></script>
+
+  <!-- Settings, onboarding, init (must be last) -->
+  <script src="js/settings.js"></script>
+</body>
+</html>
