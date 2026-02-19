@@ -3,7 +3,7 @@
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxhkRQn5c8t6rgZmAN35mAPG3N5YoZkhtNxLCT2Vtw5u5o7hMx71sTBkN+P8oR2OSAljAzyekROYHnfcnGBqgh8GSm0oVJRey+uDran3L52U8BL8RxDzmzLyDixkUXOdAGXY6s/eIxKSWWTb2BRKpASRQ8Ni7Sg/3I1+xId2qNAYiWf/RsEnylO8dMnnirjyp+5dEAo1gHcyCl8XrGAnCpWFY5TZLdxf8BbpUGiIldcMI6P+UgvHTHGdF1H+cbjjg98gYLM96Pvl/7L31TlLc2zaqxEG5SWOXjfwsNaqk2jznoDX439HiDaPA2UbRtQP2Go6Dia7ly+dJ+UAZLZ8EUwIDAQAB",
   "name": "Zen Launcher",
   "description": "A calm, productive new tab — weather, email, notes, ambient sounds, and more in one beautiful space.",
-  "version": "0.0.48",
+  "version": "0.0.49",
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },

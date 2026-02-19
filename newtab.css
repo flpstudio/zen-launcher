@@ -2499,6 +2499,15 @@ body.left-hidden .middle-panels-container {
   overflow: hidden;
 }
 
+/* Allow RSS settings panel to overflow the left container */
+.left-panels-container:has(.rss-settings-panel.open) {
+  overflow: visible;
+}
+
+.panel.flp-today-panel:has(.rss-settings-panel.open) {
+  z-index: 500;
+}
+
 /* When news ticker is hidden, reclaim bottom space */
 body.ticker-hidden .left-panels-container,
 body.ticker-hidden .middle-panels-container,
@@ -2517,7 +2526,7 @@ body.ticker-hidden .right-panels-container {
   width: 320px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   padding: 0;
   flex-shrink: 0;
   background: rgba(0, 0, 0, var(--widget-bg-alpha));
@@ -4051,6 +4060,10 @@ body.ticker-hidden .right-panels-container {
 
 .flp-today-content {
   padding: 0;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+  border-radius: 0 0 12px 12px;
 }
 
 .flp-today-item {
