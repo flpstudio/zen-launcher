@@ -26,3 +26,8 @@ Some features require keys. Some require permissions. The extension will ask whe
 2. Enable **Developer mode**
 3. Click **Load unpacked**
 4. Select this folder
+
+![Screenshot](images/screenshot2.jpg)
+![Screenshot](images/screenshot3.jpg)
+![Screenshot](images/screenshot4.jpg)
+![Screenshot](images/screenshot5.jpg)
