@@ -1,0 +1,40 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "a07f9fdf644c",
+  "session_id": "unknown",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-21T08:57:07.202721Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".claude/settings.json",
+    ".entire/.gitignore",
+    "js/i18n.js",
+    "js/widgets.js",
+    "newtab.css",
+    ".entire/settings.json",
+    "js/notes-todo.js",
+    "js/settings.js",
+    "manifest.json",
+    "newtab.html"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "421a46d476a6",
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-21T08:57:07.126817Z",
+    "agent_lines": 325,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 325,
+    "agent_percentage": 100
+  },
+  "transcript_path": ".cursor/projects/Users-paunin-Sites-zen-launcher/agent-transcripts/883cf377-d280-4a8a-93e7-87e1fa03ef08/883cf377-d280-4a8a-93e7-87e1fa03ef08.jsonl"
+}
