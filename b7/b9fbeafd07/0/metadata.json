@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.4.5",
+  "checkpoint_id": "b7b9fbeafd07",
+  "session_id": "unknown",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-21T14:46:44.917869Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "icons/icon_focus.svg"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "a63a17f30938",
+  "checkpoint_transcript_start": 73,
+  "transcript_lines_at_start": 73,
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-21T14:46:44.828445Z",
+    "agent_lines": 0,
+    "human_added": 366,
+    "human_modified": 13,
+    "human_removed": 0,
+    "total_committed": 371,
+    "agent_percentage": 0
+  },
+  "transcript_path": ".cursor/projects/Users-paunin-Sites-zen-launcher/agent-transcripts/883cf377-d280-4a8a-93e7-87e1fa03ef08/883cf377-d280-4a8a-93e7-87e1fa03ef08.jsonl"
+}
