@@ -2344,7 +2344,7 @@ function toggleRadio() {
 function searchRadioStations(query) {
   clearTimeout(radioSearchTimeout);
   
-  if (!query || query.trim().length < 2) {
+  if (!query || query.trim().length < 1) {
     radioSearching = false;
     radioSearchDone = false;
     radioSearchResults = [];
@@ -2358,6 +2358,7 @@ function searchRadioStations(query) {
   radioSearchResults = [];
   renderRadioPanel();
   
+  const delay = query.trim().length === 1 ? 800 : 400;
   radioSearchTimeout = setTimeout(async () => {
     try {
       const url = `https://de1.api.radio-browser.info/json/stations/search?name=${encodeURIComponent(query.trim())}&limit=10&order=votes&reverse=true&hidebroken=true`;
@@ -2390,7 +2391,7 @@ function searchRadioStations(query) {
       radioSearchResults = [];
       renderRadioPanel();
     }
-  }, 400);
+  }, delay);
 }
 
 // Load recent radio stations from storage
@@ -2506,7 +2507,10 @@ function renderRadioPanel() {
     } else {
       // Results
       resultsEl.innerHTML = `
-        <div class="radio-section-label">${t('radioResults')}</div>
+        <div class="radio-section-header">
+          <span class="radio-section-label">${t('radioResults')}</span>
+          <span class="radio-powered-by">Powered by <a href="https://zen-radio.app/" target="_blank">zen-radio.app</a></span>
+        </div>
         ${radioSearchResults.map(s => renderStationRow(s, playingId, true)).join('')}
       `;
       resultsEl.style.display = '';
@@ -2517,7 +2521,9 @@ function renderRadioPanel() {
     resultsEl.style.display = 'none';
     
     // Recent section
-    if (radioRecentStations.length > 0) {
+    const hasRecent = radioRecentStations.length > 0;
+
+    if (hasRecent) {
       const showAll = radioRecentExpanded;
       const visible = showAll ? radioRecentStations : radioRecentStations.slice(0, RADIO_RECENT_COLLAPSED);
       const hasMore = radioRecentStations.length > RADIO_RECENT_COLLAPSED;
@@ -2525,6 +2531,7 @@ function renderRadioPanel() {
       recentEl.innerHTML = `
         <div class="radio-section-header">
           <span class="radio-section-label">${t('radioRecent')}</span>
+          <span class="radio-powered-by">Powered by <a href="https://zen-radio.app/" target="_blank">zen-radio.app</a></span>
           <span class="radio-clear-recent" id="radioClearRecent" title="${t('radioClear')}">${t('radioClear')}</span>
         </div>
         ${visible.map(s => renderStationRow(s, playingId)).join('')}
@@ -2538,7 +2545,10 @@ function renderRadioPanel() {
     
     // Presets section
     presetsEl.innerHTML = `
-      <div class="radio-section-label">${t('radioStations')}</div>
+      <div class="radio-section-header">
+        <span class="radio-section-label">${t('radioStations')}</span>
+        ${!hasRecent ? '<span class="radio-powered-by">Powered by <a href="https://zen-radio.app/" target="_blank">zen-radio.app</a></span>' : ''}
+      </div>
       ${RADIO_PRESETS.map(s => renderStationRow(s, playingId)).join('')}
     `;
     presetsEl.style.display = '';

@@ -790,8 +790,19 @@
         </div>
         <!-- Data tab -->
         <div class="settings-tab-panel" data-stab-panel="data">
-          <p class="settings-data-description" data-i18n="resetDescription">Reset all settings, cached data, and saved preferences to their defaults. This will reload the page.</p>
-          <button class="settings-reset-btn" id="resetAllDataBtn" data-i18n="resetAllData">Reset All Data</button>
+          <div class="settings-data-section">
+            <p class="settings-data-description" data-i18n="exportImportDescription">Export your settings to a file or import previously saved settings. Sensitive keys (API tokens) are never included.</p>
+            <div class="settings-data-buttons">
+              <button class="settings-data-btn" id="exportSettingsBtn" data-i18n="exportSettings">Export Settings</button>
+              <button class="settings-data-btn" id="importSettingsBtn" data-i18n="importSettings">Import Settings</button>
+            </div>
+            <input type="file" id="importSettingsFile" accept=".json" style="display:none">
+          </div>
+          <hr class="settings-data-divider">
+          <div class="settings-data-section">
+            <p class="settings-data-description" data-i18n="resetDescription">Reset all settings, cached data, and saved preferences to their defaults. This will reload the page.</p>
+            <button class="settings-reset-btn" id="resetAllDataBtn" data-i18n="resetAllData">Reset All Data</button>
+          </div>
         </div>
       </div>
       <div class="settings-lang-picker" id="settingsLangPicker">

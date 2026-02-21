@@ -22,6 +22,16 @@ const DEFAULT_WIDGET_VISIBILITY = Object.fromEntries(
   Object.keys(WIDGET_MAP).map(k => [k, false])
 );
 
+// Keys excluded from export/import (sensitive tokens + large ephemeral data)
+const EXCLUDED_EXPORT_KEYS = [
+  'aiApiKey',
+  'aiChatHistory',
+  'gmailAccessToken',
+  'googleSignedIn',
+  'backgroundImageData',
+  'dataCache',
+];
+
 // Widget layout presets
 const WIDGET_PRESETS = {
   zen: [],
@@ -399,6 +409,7 @@ function initSettingsModal() {
         cb.checked = checked;
         applyWidgetVisibility(key, checked);
       });
+      if (document.body.classList.contains('corporate-user')) enforceCorporateNewsTicker();
       const vis = getWidgetVisibilityFromDOM();
       chrome.storage.local.set({ widgetVisibility: vis });
       selectPresetRadio(detectPresetFromVisibility(vis));
@@ -409,9 +420,8 @@ function initSettingsModal() {
   modal.querySelectorAll('input[name="widgetPreset"]').forEach(radio => {
     radio.addEventListener('change', () => {
       const presetName = radio.value;
-      if (presetName === 'custom') return; // Custom is just a label, no action
+      if (presetName === 'custom') return;
       const vis = visibilityForPreset(presetName);
-      // Update all toggle checkboxes
       modal.querySelectorAll('.widget-toggle-row[data-widget]').forEach(row => {
         const key = row.dataset.widget;
         const cb = row.querySelector('input[type="checkbox"]');
@@ -419,10 +429,66 @@ function initSettingsModal() {
         cb.checked = !!vis[key];
         applyWidgetVisibility(key, cb.checked);
       });
-      chrome.storage.local.set({ widgetVisibility: vis });
+      if (document.body.classList.contains('corporate-user')) enforceCorporateNewsTicker();
+      const updatedVis = getWidgetVisibilityFromDOM();
+      chrome.storage.local.set({ widgetVisibility: updatedVis });
       updateToggleAllState();
     });
   });
+
+  // Export settings
+  const exportBtn = document.getElementById('exportSettingsBtn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      chrome.storage.local.get(null, (data) => {
+        const filtered = { ...data };
+        EXCLUDED_EXPORT_KEYS.forEach(k => delete filtered[k]);
+        const blob = new Blob([JSON.stringify(filtered, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'zen-launcher-settings.json';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    });
+  }
+
+  // Import settings
+  const importBtn = document.getElementById('importSettingsBtn');
+  const importFile = document.getElementById('importSettingsFile');
+  if (importBtn && importFile) {
+    importBtn.addEventListener('click', () => importFile.click());
+    importFile.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+            alert(t('importInvalidFile'));
+            return;
+          }
+          EXCLUDED_EXPORT_KEYS.forEach(k => delete parsed[k]);
+          if (!confirm(t('confirmImportSettings'))) return;
+          chrome.storage.local.get(EXCLUDED_EXPORT_KEYS, (sensitive) => {
+            chrome.storage.local.clear(() => {
+              const restored = { ...parsed };
+              EXCLUDED_EXPORT_KEYS.forEach(k => { if (sensitive[k] !== undefined) restored[k] = sensitive[k]; });
+              chrome.storage.local.set(restored, () => {
+                window.location.reload();
+              });
+            });
+          });
+        } catch {
+          alert(t('importInvalidFile'));
+        }
+      };
+      reader.readAsText(file);
+      importFile.value = '';
+    });
+  }
 
   // Reset all data button
   const resetBtn = document.getElementById('resetAllDataBtn');
@@ -451,6 +517,7 @@ function initSettingsModal() {
       document.body.classList.toggle('corporate-user', isCorporate);
       if (isCorporate) {
         emailLabel.classList.add('corporate-email');
+        enforceCorporateNewsTicker();
       }
     });
   }
@@ -467,7 +534,28 @@ function getWidgetVisibilityFromDOM() {
   return vis;
 }
 
+function enforceCorporateNewsTicker() {
+  applyWidgetVisibility('newsTicker', true);
+  const row = document.querySelector('.widget-toggle-row[data-widget="newsTicker"]');
+  if (row) {
+    const cb = row.querySelector('input[type="checkbox"]');
+    if (cb) {
+      cb.checked = true;
+      cb.disabled = true;
+    }
+    row.classList.add('corporate-locked');
+  }
+  chrome.storage.local.get('widgetVisibility', (data) => {
+    const vis = { ...(data.widgetVisibility || {}) };
+    vis.newsTicker = true;
+    chrome.storage.local.set({ widgetVisibility: vis });
+  });
+}
+
 function applyWidgetVisibility(key, visible) {
+  if (key === 'newsTicker' && !visible && document.body.classList.contains('corporate-user')) {
+    return;
+  }
   const ids = WIDGET_MAP[key];
   if (!ids) return;
   ids.forEach(id => {

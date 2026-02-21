@@ -441,17 +441,18 @@ function initNotesTodo() {
         cardsContainer.innerHTML = colTodos.map(todo => {
           const due = formatDueDate(todo.due);
           const text = searchQuery ? highlightSearch(escapeHtml(todo.text), searchQuery) : escapeHtml(todo.text);
+          const isDone = colName === 'done';
           let daysLeftHtml = '';
           if (due && due.diffDays !== undefined) {
             const d = due.diffDays;
             const daysLabel = d < 0 ? `${Math.abs(d)}d ago` : d === 0 ? 'today' : `${d}d`;
-            daysLeftHtml = `<span class="nt-board-card-days ${due.cls}">${daysLabel}</span>`;
+            daysLeftHtml = `<span class="nt-board-card-days ${isDone ? '' : due.cls}">${daysLabel}</span>`;
           }
           return `
             <div class="nt-board-card" draggable="true" data-id="${todo.id}" data-status="${todo.status || 'todo'}">
               <div class="nt-board-card-text">${text}</div>
               <div class="nt-board-card-bottom">
-                <div class="nt-board-card-due ${due ? due.cls : ''}" data-action="edit-board-date" data-id="${todo.id}">${due ? due.label : `<span class="nt-board-card-due-placeholder">${t('addDate')}</span>`}</div>
+                <div class="nt-board-card-due ${due && !isDone ? due.cls : ''}" data-action="edit-board-date" data-id="${todo.id}">${due ? due.label : `<span class="nt-board-card-due-placeholder">${t('addDate')}</span>`}</div>
                 ${daysLeftHtml}
               </div>
               <button class="nt-board-card-delete" data-id="${todo.id}" title="${t('deleteLabel')}">
