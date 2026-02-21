@@ -825,11 +825,19 @@ audioChannel.onmessage = (e) => {
   }
 };
 
-// Update tab favicon based on audio state
+// Update tab favicon based on audio/focus state
 function updateFavicon() {
   const favicon = document.getElementById('tabFavicon');
   const favicon32 = document.getElementById('tabFavicon32');
   if (!favicon) return;
+  if (document.body.classList.contains('focus-mode')) {
+    favicon.type = 'image/svg+xml';
+    favicon.href = 'icons/icon_focus.svg';
+    if (favicon32) { favicon32.type = 'image/svg+xml'; favicon32.href = 'icons/icon_focus.svg'; }
+    return;
+  }
+  favicon.type = 'image/png';
+  if (favicon32) favicon32.type = 'image/png';
   const isPlaying = (currentSoundId !== null) || (currentRadioStation !== null && !radioPausedState);
   favicon.href = isPlaying ? 'icons/icon16_active.png' : 'icons/icon16.png';
   if (favicon32) favicon32.href = isPlaying ? 'icons/icon32_active.png' : 'icons/icon32.png';

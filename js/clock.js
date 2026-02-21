@@ -141,6 +141,182 @@ let clockShowSeconds = false;
 let clockDateView = 'calendar';
 let clockDateFormat = 'dd Month, yyyy';
 
+// Focus mode state
+let focusDuration = 10;
+let focusActive = false;
+let focusEndTime = null;
+let focusInterval = null;
+let focusSavedDim = null;
+
+const focusChannel = new BroadcastChannel('zen-focus-sync');
+const focusTabId = Math.random().toString(36).slice(2);
+
+focusChannel.onmessage = (e) => {
+  const d = e.data;
+  if (!d) return;
+  if (d.type === 'focus-start' && d.tabId !== focusTabId) {
+    enterFocusUI(d.endTime);
+  } else if (d.type === 'focus-stop' && d.tabId !== focusTabId) {
+    exitFocusUI(d.completed);
+  }
+};
+
+function startFocusMode() {
+  if (focusActive) return;
+  focusEndTime = Date.now() + focusDuration * 60 * 1000;
+  chrome.storage.local.set({ focusEndTime });
+  chrome.storage.local.remove('focusSoundClaimed');
+  focusChannel.postMessage({ type: 'focus-start', tabId: focusTabId, endTime: focusEndTime });
+  enterFocusUI(focusEndTime);
+}
+
+function enterFocusUI(endTime) {
+  focusActive = true;
+  focusEndTime = endTime;
+  document.body.classList.add('focus-mode');
+
+  const wrapper = document.getElementById('mainClockWrapper');
+  if (wrapper) wrapper.classList.remove('show-ampm', 'show-seconds');
+
+  const dimSlider = document.getElementById('bgDimSlider');
+  const blurSlider = document.getElementById('bgBlurSlider');
+  if (dimSlider && blurSlider) {
+    focusSavedDim = parseInt(dimSlider.value);
+    applyBackgroundEffects(80, parseInt(blurSlider.value));
+  }
+
+  if (typeof updateFavicon === 'function') updateFavicon();
+
+  if (focusInterval) clearInterval(focusInterval);
+  updateFocusTimer();
+  focusInterval = setInterval(updateFocusTimer, 1000);
+}
+
+function stopFocusMode(playSound) {
+  if (!focusActive) return;
+  chrome.storage.local.remove('focusEndTime');
+  focusChannel.postMessage({ type: 'focus-stop', tabId: focusTabId, completed: !!playSound });
+  exitFocusUI(!!playSound);
+  if (playSound) claimAndPlayFocusSound();
+}
+
+function claimAndPlayFocusSound() {
+  const delay = Math.floor(Math.random() * 200);
+  setTimeout(() => {
+    chrome.storage.local.get('focusSoundClaimed', (data) => {
+      if (data.focusSoundClaimed) return;
+      chrome.storage.local.set({ focusSoundClaimed: focusTabId }, () => {
+        setTimeout(() => {
+          chrome.storage.local.get('focusSoundClaimed', (check) => {
+            if (check.focusSoundClaimed === focusTabId) {
+              playFocusCompleteSound();
+              setTimeout(() => chrome.storage.local.remove('focusSoundClaimed'), 10000);
+            }
+          });
+        }, 100);
+      });
+    });
+  }, delay);
+}
+
+function exitFocusUI(completed) {
+  focusActive = false;
+  focusEndTime = null;
+  if (focusInterval) {
+    clearInterval(focusInterval);
+    focusInterval = null;
+  }
+  document.body.classList.remove('focus-mode');
+
+  const blurSlider = document.getElementById('bgBlurSlider');
+  if (focusSavedDim !== null && blurSlider) {
+    applyBackgroundEffects(focusSavedDim, parseInt(blurSlider.value));
+    focusSavedDim = null;
+  } else {
+    chrome.storage.local.get(['bgDim', 'bgBlur'], (r) => {
+      applyBackgroundEffects(r.bgDim !== undefined ? r.bgDim : 15, r.bgBlur !== undefined ? r.bgBlur : 0);
+    });
+  }
+
+  if (typeof updateFavicon === 'function') updateFavicon();
+  if (completed && typeof startZenPulsePattern === 'function') startZenPulsePattern();
+
+  updateClock();
+}
+
+function updateFocusTimer() {
+  const remaining = Math.max(0, focusEndTime - Date.now());
+  if (remaining <= 0) {
+    stopFocusMode(true);
+    return;
+  }
+  const totalSec = Math.ceil(remaining / 1000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  const clockEl = document.getElementById('clock');
+  if (clockEl) clockEl.textContent = `${padZero(min)}:${padZero(sec)}`;
+}
+
+function resumeFocusIfActive() {
+  chrome.storage.local.get('focusEndTime', (data) => {
+    if (data.focusEndTime && data.focusEndTime > Date.now()) {
+      enterFocusUI(data.focusEndTime);
+    } else if (data.focusEndTime) {
+      chrome.storage.local.remove('focusEndTime');
+      claimAndPlayFocusSound();
+      if (typeof startZenPulsePattern === 'function') startZenPulsePattern();
+    }
+  });
+}
+
+function playFocusCompleteSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = ctx.currentTime;
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.001, now);
+    master.gain.linearRampToValueAtTime(1, now + 2);
+    master.gain.setValueAtTime(1, now + 3);
+    master.gain.exponentialRampToValueAtTime(0.001, now + 9);
+    master.connect(ctx.destination);
+
+    const bowlFreqs = [261.6, 392.0, 523.3, 659.3, 784.0];
+    bowlFreqs.forEach((freq, i) => {
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      osc1.type = 'sine';
+      osc2.type = 'sine';
+      osc1.frequency.value = freq;
+      osc2.frequency.value = freq + 1.2 + i * 0.3;
+      const vol = 0.028 / (i + 1);
+      const g1 = ctx.createGain();
+      const g2 = ctx.createGain();
+      g1.gain.value = vol;
+      g2.gain.value = vol;
+      const lfo = ctx.createOscillator();
+      lfo.frequency.value = 0.04 + i * 0.015;
+      const lfoG = ctx.createGain();
+      lfoG.gain.value = vol * 0.4;
+      lfo.connect(lfoG);
+      lfoG.connect(g1.gain);
+      osc1.connect(g1);
+      osc2.connect(g2);
+      g1.connect(master);
+      g2.connect(master);
+      osc1.start(now);
+      osc2.start(now);
+      lfo.start(now);
+      osc1.stop(now + 10);
+      osc2.stop(now + 10);
+      lfo.stop(now + 10);
+    });
+
+    setTimeout(() => ctx.close(), 11000);
+  } catch (e) {
+    console.warn('[Focus] Could not play completion sound:', e);
+  }
+}
+
 function getTimeInTimezone(timezone) {
   try {
     const now = new Date();
@@ -172,6 +348,8 @@ function renderWorldClocks() {
 }
 
 function updateClock() {
+  if (focusActive) return;
+
   const now = new Date();
   const is12h = clockFormat === '12h';
 
@@ -877,14 +1055,22 @@ function initClockSettings() {
   if (!settingsBtn || !panel) return;
   
   // Load saved clock display settings
-  chrome.storage.local.get(['clockFormat', 'clockShowSeconds', 'clockDateView', 'clockDateFormat'], (result) => {
+  chrome.storage.local.get(['clockFormat', 'clockShowSeconds', 'clockDateView', 'clockDateFormat', 'focusDuration'], (result) => {
     if (result.clockFormat) clockFormat = result.clockFormat;
     if (result.clockShowSeconds !== undefined) clockShowSeconds = result.clockShowSeconds;
     if (result.clockDateView) clockDateView = result.clockDateView;
     if (result.clockDateFormat) clockDateFormat = result.clockDateFormat;
+    if (result.focusDuration !== undefined) focusDuration = result.focusDuration;
     applyClockSettingsUI();
     updateClock();
     updateClockDateArea();
+
+    const focusSlider = document.getElementById('focusDurationSlider');
+    const focusValue = document.getElementById('focusDurationValue');
+    if (focusSlider) {
+      focusSlider.value = focusDuration;
+      if (focusValue) focusValue.textContent = focusDuration + 'm';
+    }
   });
   
   // Toggle panel on gear button click
@@ -994,12 +1180,36 @@ function initClockSettings() {
   const clockWrapper = document.getElementById('mainClockWrapper');
   if (clockWrapper) {
     clockWrapper.addEventListener('click', (e) => {
-      // Don't toggle if clicking settings or other interactive elements
       if (e.target.closest('.clock-settings-btn')) return;
+      if (focusActive) return;
       clockDateView = clockDateView === 'calendar' ? 'date' : 'calendar';
       chrome.storage.local.set({ clockDateView });
       updateClockDateArea();
       applyClockSettingsUI();
+    });
+  }
+
+  // Focus duration slider
+  const focusSlider = document.getElementById('focusDurationSlider');
+  const focusValue = document.getElementById('focusDurationValue');
+  if (focusSlider) {
+    focusSlider.addEventListener('input', () => {
+      focusDuration = Number(focusSlider.value);
+      if (focusValue) focusValue.textContent = focusDuration + 'm';
+      chrome.storage.local.set({ focusDuration });
+    });
+  }
+
+  // Focus toggle button
+  const focusBtn = document.getElementById('focusToggleBtn');
+  if (focusBtn) {
+    focusBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (focusActive) {
+        stopFocusMode(false);
+      } else {
+        startFocusMode();
+      }
     });
   }
 }

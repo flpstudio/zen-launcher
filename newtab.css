@@ -1224,17 +1224,21 @@ body.onboarding-active .bg-settings-btn {
 }
 
 .clock-settings-btn {
+  position: absolute;
+  right: calc(100% + 6px);
+  bottom: 5px;
   background: none;
   border: none;
   color: white;
   cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
+  padding: 0;
+  border-radius: 50%;
   opacity: 0;
-  transition: all 0.2s;
+  transition: opacity 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2;
 }
 
 .panel.clock-panel:hover .clock-settings-btn {
@@ -1246,9 +1250,14 @@ body.onboarding-active .bg-settings-btn {
 }
 
 .clock-settings-btn svg {
-  width: 14px;
-  height: 14px;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+  width: 29px;
+  height: 29px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+}
+
+body.focus-mode .clock-settings-btn {
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 .clock-main-row {
@@ -1256,6 +1265,115 @@ body.onboarding-active .bg-settings-btn {
   align-items: center;
   justify-content: center;
   width: 100%;
+}
+
+/* Focus toggle button — sits inside main-clock-wrapper, left of the digits */
+.focus-toggle-btn {
+  position: absolute;
+  right: calc(100% + 6px);
+  top: 5px;
+  height: 50%;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.focus-toggle-btn svg {
+  width: 29px;
+  height: 29px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+}
+
+.panel.clock-panel:hover .focus-toggle-btn {
+  opacity: 0.3;
+}
+
+.focus-toggle-btn:hover {
+  opacity: 0.8 !important;
+}
+
+body.focus-mode .focus-toggle-btn {
+  opacity: 0.6 !important;
+  color: #6b9a7a;
+}
+
+body.focus-mode .focus-toggle-btn:hover {
+  opacity: 1 !important;
+}
+
+/* Focus mode: fade out all widgets except timer */
+.left-panels-container,
+.middle-panels-container,
+.calendar-panel,
+.news-ticker,
+.bg-controls,
+.clock-top-row,
+.clock-date-area {
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+body.focus-mode .left-panels-container,
+body.focus-mode .middle-panels-container,
+body.focus-mode .calendar-panel,
+body.focus-mode .news-ticker,
+body.focus-mode .bg-controls,
+body.focus-mode .clock-top-row,
+body.focus-mode .clock-date-area {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Focus timer pulse animation */
+body.focus-mode .main-clock {
+  animation: focusPulse 4s ease-in-out infinite;
+}
+
+@keyframes focusPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Focus duration slider in clock settings */
+.focus-duration-row {
+  gap: 8px;
+}
+
+.focus-duration-slider {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.focus-duration-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+}
+
+.focus-duration-value {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  min-width: 30px;
+  text-align: right;
+  font-feature-settings: 'tnum' 1;
 }
 
 .main-clock-wrapper {

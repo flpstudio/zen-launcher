@@ -30,6 +30,8 @@ const EXCLUDED_EXPORT_KEYS = [
   'googleSignedIn',
   'backgroundImageData',
   'dataCache',
+  'focusEndTime',
+  'focusSoundClaimed',
 ];
 
 // Widget layout presets
@@ -798,6 +800,9 @@ async function init() {
   
   // Initialize clock settings (united: timezone + display)
   initClockSettings();
+
+  // Resume focus mode if active in another tab
+  resumeFocusIfActive();
 
   // Initialize Zen Pulse
   initZenPulse();
