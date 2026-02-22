@@ -700,6 +700,7 @@ function initPlant() {
   chrome.storage.local.get('plantData', (result) => {
     const stored = result.plantData || {};
     const isBirth = !stored.seed;
+    delete stored.debugDays;
     initPlantData(stored);
     render();
 
@@ -727,18 +728,10 @@ function initPlant() {
   const debugSlider = document.getElementById('plantDebugDays');
   const debugValue = document.getElementById('plantDebugValue');
   if (debugSlider) {
-    chrome.storage.local.get('plantData', (result) => {
-      const pd = result.plantData || {};
-      if (pd.debugDays !== null && pd.debugDays !== undefined) {
-        debugSlider.value = pd.debugDays;
-        if (debugValue) debugValue.textContent = pd.debugDays;
-      }
-    });
     debugSlider.addEventListener('input', () => {
       const val = parseInt(debugSlider.value);
       if (debugValue) debugValue.textContent = val;
       plantData.debugDays = val;
-      chrome.storage.local.set({ plantData });
       render();
     });
   }

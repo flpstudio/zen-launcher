@@ -492,6 +492,10 @@ function initSettingsModal() {
       chrome.storage.local.get(null, (data) => {
         const filtered = { ...data };
         EXCLUDED_EXPORT_KEYS.forEach(k => delete filtered[k]);
+        if (filtered.plantData) {
+          filtered.plantData = { ...filtered.plantData };
+          delete filtered.plantData.debugDays;
+        }
         const blob = new Blob([JSON.stringify(filtered, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
