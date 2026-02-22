@@ -143,6 +143,7 @@ let clockDateFormat = 'dd Month, yyyy';
 
 // Focus mode state
 let focusDuration = 10;
+let focusHideWorkspace = true;
 let focusActive = false;
 let focusEndTime = null;
 let focusInterval = null;
@@ -173,16 +174,19 @@ function startFocusMode() {
 function enterFocusUI(endTime) {
   focusActive = true;
   focusEndTime = endTime;
-  document.body.classList.add('focus-mode');
+  document.body.classList.add('focus-active');
 
   const wrapper = document.getElementById('mainClockWrapper');
   if (wrapper) wrapper.classList.remove('show-ampm', 'show-seconds');
 
-  const dimSlider = document.getElementById('bgDimSlider');
-  const blurSlider = document.getElementById('bgBlurSlider');
-  if (dimSlider && blurSlider) {
-    focusSavedDim = parseInt(dimSlider.value);
-    applyBackgroundEffects(80, parseInt(blurSlider.value));
+  if (focusHideWorkspace) {
+    document.body.classList.add('focus-mode');
+    const dimSlider = document.getElementById('bgDimSlider');
+    const blurSlider = document.getElementById('bgBlurSlider');
+    if (dimSlider && blurSlider) {
+      focusSavedDim = parseInt(dimSlider.value);
+      applyBackgroundEffects(80, parseInt(blurSlider.value));
+    }
   }
 
   if (typeof updateFavicon === 'function') updateFavicon();
@@ -227,15 +231,14 @@ function exitFocusUI(completed) {
     focusInterval = null;
   }
   document.body.classList.remove('focus-mode');
+  document.body.classList.remove('focus-active');
 
-  const blurSlider = document.getElementById('bgBlurSlider');
-  if (focusSavedDim !== null && blurSlider) {
-    applyBackgroundEffects(focusSavedDim, parseInt(blurSlider.value));
+  if (focusSavedDim !== null) {
+    const blurSlider = document.getElementById('bgBlurSlider');
+    if (blurSlider) {
+      applyBackgroundEffects(focusSavedDim, parseInt(blurSlider.value));
+    }
     focusSavedDim = null;
-  } else {
-    chrome.storage.local.get(['bgDim', 'bgBlur'], (r) => {
-      applyBackgroundEffects(r.bgDim !== undefined ? r.bgDim : 15, r.bgBlur !== undefined ? r.bgBlur : 0);
-    });
   }
 
   if (typeof updateFavicon === 'function') updateFavicon();
@@ -1055,12 +1058,13 @@ function initClockSettings() {
   if (!settingsBtn || !panel) return;
   
   // Load saved clock display settings
-  chrome.storage.local.get(['clockFormat', 'clockShowSeconds', 'clockDateView', 'clockDateFormat', 'focusDuration'], (result) => {
+  chrome.storage.local.get(['clockFormat', 'clockShowSeconds', 'clockDateView', 'clockDateFormat', 'focusDuration', 'focusHideWorkspace'], (result) => {
     if (result.clockFormat) clockFormat = result.clockFormat;
     if (result.clockShowSeconds !== undefined) clockShowSeconds = result.clockShowSeconds;
     if (result.clockDateView) clockDateView = result.clockDateView;
     if (result.clockDateFormat) clockDateFormat = result.clockDateFormat;
     if (result.focusDuration !== undefined) focusDuration = result.focusDuration;
+    if (result.focusHideWorkspace !== undefined) focusHideWorkspace = result.focusHideWorkspace;
     applyClockSettingsUI();
     updateClock();
     updateClockDateArea();
@@ -1071,6 +1075,8 @@ function initClockSettings() {
       focusSlider.value = focusDuration;
       if (focusValue) focusValue.textContent = focusDuration + 'm';
     }
+    const hideWsToggle = document.getElementById('focusHideWorkspaceToggle');
+    if (hideWsToggle) hideWsToggle.checked = focusHideWorkspace;
   });
   
   // Toggle panel on gear button click
@@ -1197,6 +1203,15 @@ function initClockSettings() {
       focusDuration = Number(focusSlider.value);
       if (focusValue) focusValue.textContent = focusDuration + 'm';
       chrome.storage.local.set({ focusDuration });
+    });
+  }
+
+  // Focus hide workspace toggle
+  const hideWsToggle = document.getElementById('focusHideWorkspaceToggle');
+  if (hideWsToggle) {
+    hideWsToggle.addEventListener('change', () => {
+      focusHideWorkspace = hideWsToggle.checked;
+      chrome.storage.local.set({ focusHideWorkspace });
     });
   }
 

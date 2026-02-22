@@ -1255,7 +1255,7 @@ body.onboarding-active .bg-settings-btn {
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
 }
 
-body.focus-mode .clock-settings-btn {
+body.focus-active .clock-settings-btn {
   opacity: 0 !important;
   pointer-events: none !important;
 }
@@ -1301,12 +1301,12 @@ body.focus-mode .clock-settings-btn {
   opacity: 0.8 !important;
 }
 
-body.focus-mode .focus-toggle-btn {
+body.focus-active .focus-toggle-btn {
   opacity: 0.6 !important;
   color: #6b9a7a;
 }
 
-body.focus-mode .focus-toggle-btn:hover {
+body.focus-active .focus-toggle-btn:hover {
   opacity: 1 !important;
 }
 
@@ -1334,7 +1334,7 @@ body.focus-mode .clock-date-area {
 }
 
 /* Focus timer pulse animation */
-body.focus-mode .main-clock {
+body.focus-active .main-clock {
   animation: focusPulse 4s ease-in-out infinite;
 }
 
@@ -1451,6 +1451,8 @@ body.focus-mode .main-clock {
   left: 8px;
   right: 8px;
   max-height: 70vh;
+  display: flex;
+  flex-direction: column;
   background: rgba(10, 10, 15, 0.92);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
@@ -1461,7 +1463,7 @@ body.focus-mode .main-clock {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease, transform 0.3s ease;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 /* Position above the widget (default) */
@@ -1493,6 +1495,17 @@ body.focus-mode .main-clock {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.clock-settings-section-title {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.35);
+  margin-bottom: 2px;
 }
 
 /* Clock Display Section */
@@ -1531,17 +1544,20 @@ body.focus-mode .main-clock {
 .clock-settings-footer {
   display: flex;
   justify-content: flex-end;
-  padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  margin-top: 4px;
+  padding: 8px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+  background: rgba(10, 10, 15, 0.92);
 }
 
 .clock-settings-save-btn {
   background: rgba(255, 255, 255, 0.1);
   border: none;
   border-radius: 6px;
-  width: 32px;
   height: 32px;
+  padding: 0 14px;
+  gap: 6px;
+  font-size: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;

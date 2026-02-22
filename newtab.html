@@ -50,7 +50,8 @@
     </div>
     <div class="clock-settings-panel" id="clockSettingsPanel">
       <div class="clock-settings-content">
-        <!-- Clock Display Section -->
+        <!-- Clock Section -->
+        <div class="clock-settings-section-title" data-i18n="clockSectionTitle">Clock</div>
         <div class="clock-display-section">
           <div class="clock-setting-row">
             <span data-i18n="format12h">12h</span>
@@ -66,6 +67,11 @@
               <span class="widget-toggle-slider"></span>
             </label>
           </div>
+        </div>
+        <div class="clock-settings-divider"></div>
+        <!-- Calendar Section -->
+        <div class="clock-settings-section-title" data-i18n="calendarSectionTitle">Calendar</div>
+        <div class="clock-display-section">
           <div class="clock-setting-row">
             <span data-i18n="clockShowCalendar">Calendar</span>
             <label class="widget-toggle-switch">
@@ -83,24 +89,37 @@
               <option value="yyyy-mm-dd">2026-12-27</option>
             </select>
           </div>
+        </div>
+        <div class="clock-settings-divider"></div>
+        <!-- Focus Section -->
+        <div class="clock-settings-section-title" data-i18n="focusSectionTitle">Focus</div>
+        <div class="clock-display-section">
           <div class="clock-setting-row focus-duration-row">
-            <span data-i18n="focusDuration">Focus</span>
+            <span data-i18n="focusDuration">Focus duration</span>
             <input type="range" id="focusDurationSlider" class="focus-duration-slider" min="1" max="100" step="1" value="10">
             <span class="focus-duration-value" id="focusDurationValue">10m</span>
           </div>
+          <div class="clock-setting-row">
+            <span data-i18n="focusHideWorkspace">Hide workspace</span>
+            <label class="widget-toggle-switch">
+              <input type="checkbox" id="focusHideWorkspaceToggle" checked>
+              <span class="widget-toggle-slider"></span>
+            </label>
+          </div>
         </div>
-        <!-- Divider -->
         <div class="clock-settings-divider"></div>
-        <!-- Timezone Section -->
+        <!-- Timezones Section -->
+        <div class="clock-settings-section-title" data-i18n="timezonesSectionTitle">Timezones</div>
         <div class="clock-timezone-section">
           <div class="tz-list" id="tzList"></div>
           <button class="tz-add-btn-inline" id="tzAddBtn" data-i18n="addTimezone">+ Add Timezone</button>
         </div>
-        <div class="clock-settings-footer">
-          <button class="clock-settings-save-btn" id="clockSettingsSaveBtn" data-i18n-title="save" title="Save & Close">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-          </button>
-        </div>
+      </div>
+      <div class="clock-settings-footer">
+        <button class="clock-settings-save-btn" id="clockSettingsSaveBtn" title="Save & Close">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+          <span data-i18n="save">Save</span>
+        </button>
       </div>
     </div>
     <div class="clock-main-row">

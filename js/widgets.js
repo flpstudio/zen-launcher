@@ -830,7 +830,7 @@ function updateFavicon() {
   const favicon = document.getElementById('tabFavicon');
   const favicon32 = document.getElementById('tabFavicon32');
   if (!favicon) return;
-  if (document.body.classList.contains('focus-mode')) {
+  if (document.body.classList.contains('focus-active')) {
     favicon.type = 'image/svg+xml';
     favicon.href = 'icons/icon_focus.svg';
     if (favicon32) { favicon32.type = 'image/svg+xml'; favicon32.href = 'icons/icon_focus.svg'; }
