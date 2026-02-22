@@ -250,13 +250,29 @@
       <!-- Active state: progressbar with settings gear -->
       <div class="life-counter-active" id="lifeCounterActive" style="display: none;">
         <span class="life-counter-percentage" id="lifeCounterPercentage">0%</span>
+        <div class="lc-mood-bar" id="lcMoodBar">
+          <button class="lc-mood-btn" data-mood="1" title="Terrible">😫</button>
+          <button class="lc-mood-btn" data-mood="2" title="Bad">😟</button>
+          <button class="lc-mood-btn" data-mood="3" title="Neutral">😐</button>
+          <button class="lc-mood-btn" data-mood="4" title="Good">😊</button>
+          <button class="lc-mood-btn" data-mood="5" title="Great">🤩</button>
+        </div>
         <div class="life-counter-bar" id="lifeCounterBar">
           <div class="life-counter-progress" id="lifeCounterProgress"></div>
-          <div class="life-counter-tooltip" id="lifeCounterTooltip"></div>
         </div>
+        <div class="life-counter-tooltip" id="lifeCounterTooltip"></div>
+        <span class="lc-life-score" id="lcLifeScore"></span>
+        <button class="lc-stats-btn" id="lcStatsBtn" title="Life Stats">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/></svg>
+        </button>
         <button class="life-counter-settings-btn" id="lifeCounterSettingsBtn">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
         </button>
+      </div>
+      
+      <!-- Stats panel -->
+      <div class="lc-stats-panel" id="lcStatsPanel">
+        <div class="lc-stats-content" id="lcStatsContent"></div>
       </div>
       
       <!-- Settings panel -->

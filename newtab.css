@@ -3802,6 +3802,12 @@ body.ticker-hidden .right-panels-container {
   transition: all 0.3s;
 }
 
+.life-counter:hover,
+.life-counter:has(.lc-stats-panel.open),
+.life-counter:has(.life-counter-settings-panel.open) {
+  background: rgba(0, 0, 0, 0.6);
+}
+
 /* Memento mori State (no birthday set) */
 .life-counter-memento-state {
   width: 100%;
@@ -3849,7 +3855,9 @@ body.ticker-hidden .right-panels-container {
   transition: opacity 0.2s;
 }
 
-.life-counter-active:hover .life-counter-percentage {
+.life-counter-active:hover .life-counter-percentage,
+.life-counter:has(.lc-stats-panel.open) .life-counter-percentage,
+.life-counter:has(.life-counter-settings-panel.open) .life-counter-percentage {
   opacity: 0;
 }
 
@@ -3861,6 +3869,13 @@ body.ticker-hidden .right-panels-container {
   position: relative;
   cursor: pointer;
   overflow: hidden;
+  transition: opacity 0.2s;
+}
+
+.life-counter:hover .life-counter-bar,
+.life-counter:has(.lc-stats-panel.open) .life-counter-bar,
+.life-counter:has(.life-counter-settings-panel.open) .life-counter-bar {
+  opacity: 0.2;
 }
 
 .life-counter-progress {
@@ -3873,15 +3888,12 @@ body.ticker-hidden .right-panels-container {
 
 .life-counter-tooltip {
   position: absolute;
-  right: 0;
+  right: 28px;
   top: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 0 4px 4px 0;
-  padding: 0 8px;
-  font-size: 0.7rem;
+  background: none;
+  padding: 0 4px;
+  font-size: 0.65rem;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
@@ -3889,7 +3901,7 @@ body.ticker-hidden .right-panels-container {
   z-index: 10;
   display: flex;
   align-items: center;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.02em;
 }
 
 /* Settings Button */
@@ -3911,7 +3923,9 @@ body.ticker-hidden .right-panels-container {
   z-index: 10;
 }
 
-.life-counter:hover .life-counter-settings-btn {
+.life-counter:hover .life-counter-settings-btn,
+.life-counter:has(.lc-stats-panel.open) .life-counter-settings-btn,
+.life-counter:has(.life-counter-settings-panel.open) .life-counter-settings-btn {
   opacity: 0.3;
 }
 
@@ -4020,8 +4034,9 @@ body.ticker-hidden .right-panels-container {
 .lc-setting-row label {
   font-size: 0.75rem;
   opacity: 0.8;
-  white-space: nowrap;
   min-width: 60px;
+  flex-shrink: 0;
+  max-width: 45%;
 }
 
 .lc-setting-row input[type="date"] {
@@ -4066,6 +4081,332 @@ body.ticker-hidden .right-panels-container {
   justify-content: flex-end;
   gap: 4px;
   padding: 6px 12px;
+}
+
+/* Mood Emoji Bar */
+.lc-mood-bar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 15;
+}
+
+.life-counter-active:hover .lc-mood-bar:not(.lc-mood-logged),
+.life-counter:has(.lc-stats-panel.open) .lc-mood-bar:not(.lc-mood-logged) {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.lc-mood-bar.lc-mood-logged {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lc-mood-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0 2px;
+  opacity: 0.75;
+  transition: opacity 0.15s, transform 0.15s;
+  line-height: 1;
+  filter: grayscale(0.3);
+}
+
+.lc-mood-btn:hover {
+  opacity: 1;
+  transform: scale(1.3);
+  filter: grayscale(0);
+}
+
+.lc-mood-btn.lc-mood-selected {
+  opacity: 1;
+  filter: grayscale(0);
+}
+
+.lc-mood-bar.lc-mood-logged .lc-mood-btn:not(.lc-mood-selected) {
+  opacity: 0.2;
+}
+
+.lc-mood-bar.lc-mood-logged .lc-mood-selected {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+/* Stats Button */
+.lc-life-score {
+  position: absolute;
+  left: 26px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.life-counter:hover .lc-life-score,
+.life-counter:has(.lc-stats-panel.open) .lc-life-score,
+.life-counter:has(.life-counter-settings-panel.open) .lc-life-score {
+  opacity: 1;
+}
+
+.lc-stats-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  z-index: 15;
+}
+
+.life-counter:hover .lc-stats-btn,
+.life-counter:has(.lc-stats-panel.open) .lc-stats-btn,
+.life-counter:has(.life-counter-settings-panel.open) .lc-stats-btn {
+  opacity: 0.3;
+}
+
+.lc-stats-btn:hover {
+  opacity: 0.8 !important;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.lc-stats-btn svg {
+  width: 14px;
+  height: 14px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+/* Stats Panel */
+.lc-stats-panel {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  background: rgba(10, 10, 15, 0.92);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 0;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  overflow: hidden;
+}
+
+.lc-stats-panel.position-above {
+  bottom: calc(100% + 8px);
+  transform: translateY(10px);
+}
+
+.lc-stats-panel.position-above.open {
+  transform: translateY(0);
+}
+
+.lc-stats-panel.position-below {
+  top: calc(100% + 8px);
+  transform: translateY(-10px);
+}
+
+.lc-stats-panel.position-below.open {
+  transform: translateY(0);
+}
+
+.lc-stats-panel.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.life-counter:has(.lc-stats-panel.open) {
+  z-index: 500;
+}
+
+.lc-stats-content {
+  padding: 12px;
+}
+
+.lc-stats-section-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.35);
+  margin-bottom: 6px;
+}
+
+.lc-mood-lifetime-score {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.lc-stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  padding: 3px 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.lc-stats-row .lc-stat-label {
+  opacity: 0.6;
+}
+
+.lc-stat-value-lived {
+  color: rgba(140, 210, 140, 0.95);
+}
+
+.lc-stat-value-left {
+  color: rgba(220, 185, 120, 0.9);
+}
+
+.lc-stats-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 8px 0;
+}
+
+/* Stacked mood bars */
+.lc-mood-stacked-group {
+  margin-top: 8px;
+}
+
+.lc-mood-today-group {
+  margin-top: 4px;
+}
+
+.lc-mood-today-picker {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 0 2px;
+}
+
+.lc-mood-today-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  opacity: 0.5;
+  filter: grayscale(0.4);
+  transition: all 0.15s ease;
+}
+
+.lc-mood-today-btn:hover {
+  opacity: 1;
+  filter: grayscale(0);
+  transform: scale(1.25);
+}
+
+.lc-mood-today-btn.lc-mood-today-selected {
+  opacity: 1;
+  filter: grayscale(0);
+  transform: scale(1.2);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.lc-mood-stacked-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+
+.lc-mood-stacked-label {
+  font-size: 0.65rem;
+  opacity: 0.5;
+}
+
+.lc-mood-stacked-avg {
+  font-size: 0.65rem;
+  opacity: 0.6;
+  font-weight: 500;
+}
+
+.lc-mood-stacked-bar-wrap {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+}
+
+.lc-mood-stacked-empty {
+  width: 100%;
+  height: 100%;
+}
+
+.lc-mood-stacked-seg {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.lc-mood-stacked-seg[data-mood="1"] { background: rgb(220, 85, 85); }
+.lc-mood-stacked-seg[data-mood="2"] { background: rgb(225, 160, 75); }
+.lc-mood-stacked-seg[data-mood="3"] { background: rgb(210, 210, 100); }
+.lc-mood-stacked-seg[data-mood="4"] { background: rgb(100, 200, 100); }
+.lc-mood-stacked-seg[data-mood="5"] { background: rgb(70, 170, 230); }
+
+.lc-mood-legend {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.lc-mood-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+}
+
+.lc-mood-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.lc-mood-legend-dot[data-mood="1"] { background: rgb(220, 85, 85); }
+.lc-mood-legend-dot[data-mood="2"] { background: rgb(225, 160, 75); }
+.lc-mood-legend-dot[data-mood="3"] { background: rgb(210, 210, 100); }
+.lc-mood-legend-dot[data-mood="4"] { background: rgb(100, 200, 100); }
+.lc-mood-legend-dot[data-mood="5"] { background: rgb(70, 170, 230); }
+
+.lc-mood-score-desc {
+  text-align: center;
+  font-size: 0.6rem;
+  opacity: 0.35;
+  margin-top: 4px;
+  margin-bottom: 2px;
 }
 
 
