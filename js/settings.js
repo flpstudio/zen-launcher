@@ -15,6 +15,7 @@ const WIDGET_MAP = {
   gmail: ['gmailHeader', 'meetingsSection', 'gmailContent'],
   hackerNews: ['hnWidget'],
   wordOfDay: ['wotdPanel'],
+  plant: ['plantWrap'],
 };
 
 // Default: all widgets disabled
@@ -32,6 +33,7 @@ const EXCLUDED_EXPORT_KEYS = [
   'dataCache',
   'focusEndTime',
   'focusSoundClaimed',
+  'debugMode',
 ];
 
 // Widget layout presets
@@ -58,6 +60,7 @@ const WIDGET_INIT_MAP = {
   gmail:        () => { initGmail(); initEmailPreview(); initMeetings(); },
   hackerNews:   () => initHackerNews(),
   wordOfDay:    () => initWordOfDay(),
+  plant:        () => initPlant(),
 };
 
 // Track which widgets have been initialized (for lazy loading)
@@ -356,6 +359,50 @@ function initSettingsModal() {
       if (appInfoBar) appInfoBar.style.display = target === 'data' ? 'flex' : 'none';
     });
   });
+
+  // Debug tab easter egg: 5 clicks on empty tab header space to reveal, button to exit
+  (function initDebugTabToggle() {
+    const tabBar = modal.querySelector('.settings-tabs');
+    const debugTab = modal.querySelector('.settings-debug-tab');
+    const debugPanel = modal.querySelector('[data-stab-panel="debug"]');
+    const debugExitBtn = document.getElementById('debugExitBtn');
+    if (!tabBar || !debugTab || !debugPanel) return;
+
+    function showDebug() {
+      debugTab.style.display = '';
+      chrome.storage.local.set({ debugMode: true });
+    }
+
+    function hideDebug() {
+      debugTab.style.display = 'none';
+      debugPanel.classList.remove('active');
+      chrome.storage.local.set({ debugMode: false });
+      const widgetsTab = modal.querySelector('[data-stab="widgets"]');
+      const widgetsPanel = modal.querySelector('[data-stab-panel="widgets"]');
+      tabs.forEach(t => t.classList.toggle('active', t === widgetsTab));
+      panels.forEach(p => p.classList.toggle('active', p === widgetsPanel));
+    }
+
+    chrome.storage.local.get('debugMode', (r) => {
+      if (r.debugMode) debugTab.style.display = '';
+    });
+
+    let showClicks = 0, showTimer = 0;
+    tabBar.addEventListener('click', (e) => {
+      if (e.target.closest('.settings-tab')) return;
+      clearTimeout(showTimer);
+      showClicks++;
+      if (showClicks >= 5) {
+        showDebug();
+        showClicks = 0;
+      }
+      showTimer = setTimeout(() => { showClicks = 0; }, 1500);
+    });
+
+    if (debugExitBtn) {
+      debugExitBtn.addEventListener('click', hideDebug);
+    }
+  })();
 
   // Load widget visibility and apply toggles
   const toggleAllCheckbox = document.getElementById('toggleAllWidgets');

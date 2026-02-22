@@ -547,6 +547,7 @@
           <button class="settings-tab" data-stab="visuals" data-i18n="appearanceTab">Appearance</button>
           <button class="settings-tab" data-stab="shortcuts" data-i18n="shortcutsTab">Shortcuts</button>
           <button class="settings-tab" data-stab="data" data-i18n="dataTab">Data</button>
+          <button class="settings-tab settings-debug-tab" data-stab="debug" style="display:none">🐞</button>
         </div>
         <button class="settings-modal-close" id="settingsModalClose">&times;</button>
       </div>
@@ -803,6 +804,10 @@
             <span class="widget-toggle-label" data-i18n="widgetHistoryTicker">This Day in History</span>
             <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
           </div>
+          <div class="widget-toggle-row" data-widget="plant">
+            <span class="widget-toggle-label" data-i18n="widgetPlant">Zen Plant</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
         </div>
         <!-- Shortcuts tab -->
         <div class="settings-tab-panel" data-stab-panel="shortcuts">
@@ -851,6 +856,20 @@
             <button class="settings-reset-btn" id="resetAllDataBtn" data-i18n="resetAllData">Reset All Data</button>
           </div>
         </div>
+        <!-- Debug tab (hidden by default, 5-click easter egg) -->
+        <div class="settings-tab-panel" data-stab-panel="debug">
+          <div class="widget-group-label" data-i18n="widgetPlant">Zen Plant</div>
+          <div class="settings-data-section">
+            <p class="settings-data-description" data-i18n="plantDebugDays">Days after planted (debug)</p>
+            <div class="plant-debug-row">
+              <input type="range" id="plantDebugDays" min="0" max="2452" value="0" class="plant-debug-slider">
+              <span id="plantDebugValue" class="plant-debug-value">0</span>
+            </div>
+            <button class="settings-reset-btn plant-reset-genome-btn" id="plantResetGenomeBtn" data-i18n="resetGenome">Reset Genome</button>
+          </div>
+          <div class="debug-exit-spacer"></div>
+          <button class="settings-reset-btn debug-exit-btn" id="debugExitBtn">Exit debug mode</button>
+        </div>
       </div>
       <div class="settings-lang-picker" id="settingsLangPicker">
         <div class="lang-picker-grid" id="langPickerGrid">
@@ -889,6 +908,11 @@
     </div>
   </div>
 
+  <!-- Zen Plant -->
+  <div id="plantWrap">
+    <canvas id="plantCanvas" width="180" height="295"></canvas>
+  </div>
+
   <!-- Core: i18n, utilities, cache -->
   <script src="js/i18n.js"></script>
   <script src="js/utils.js"></script>
@@ -908,6 +932,7 @@
   <script src="js/fear-greed.js"></script>
   <script src="js/word-of-day.js"></script>
   <script src="js/notes-todo.js"></script>
+  <script src="js/plant.js"></script>
 
   <!-- Settings, onboarding, init (must be last) -->
   <script src="js/settings.js"></script>
