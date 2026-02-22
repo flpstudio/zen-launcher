@@ -170,3 +170,4 @@
 {"role":"assistant","message":{"content":[{"type":"text","text":"Now when the plant is born for the first time (no existing seed in storage), three zen pulses will ripple out from the pot area — the first immediately (after a short 300ms settle), then two more at 600ms intervals, giving a gentle \"life begins\" effect."}]}}
 {"role":"user","message":{"content":[{"type":"text","text":"<user_query>\ntcp\n</user_query>"}]}}
 {"role":"assistant","message":{"content":[{"type":"text","text":"Latest tag is `v0.0.55`, so next version will be `v0.0.56`."}]}}
+{"role":"assistant","message":{"content":[{"type":"text","text":"Done. Released **v0.0.56** — committed, tagged, and pushed successfully. This includes:\n\n- Plant widget with genome-driven garden label on a stick\n- Plant birth zen pulse effect\n- Plant initializes on first widget show\n- Daily evolution with automatic re-render\n- Hover opacity via JS-based detection\n- Plant wrapper for non-interactive overlay"}]}}
