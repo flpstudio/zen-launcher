@@ -393,3 +393,4 @@
 {"role":"assistant","message":{"content":[{"type":"text","text":"All pre-existing warnings. The volume controls bar now slides in from the right side of the soundbar widget instead of below it, vertically centered with the bar."}]}}
 {"role":"user","message":{"content":[{"type":"text","text":"<user_query>\ntcp\n</user_query>"}]}}
 {"role":"assistant","message":{"content":[{"type":"text","text":"Latest tag is `v0.0.54`, next version is `0.0.55`."}]}}
+{"role":"assistant","message":{"content":[{"type":"text","text":"Done. Released **v0.0.55** — commit and tag pushed successfully."}]}}
