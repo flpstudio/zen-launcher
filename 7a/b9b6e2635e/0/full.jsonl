@@ -381,3 +381,4 @@
 {"role":"assistant","message":{"content":[{"type":"text","text":"All pre-existing warnings, no new issues. \n\nNow the widget keeps its hover state (darkened background, dimmed bar, visible mood bar, tooltip, life score, gear and stats icons) whenever the stats or settings panel is open, even if the mouse moves off the widget to interact with the panel."}]}}
 {"role":"user","message":{"content":[{"type":"text","text":"<user_query>\ntcp\n</user_query>"}]}}
 {"role":"assistant","message":{"content":[{"type":"text","text":"Latest tag is `v0.0.53`, so next version is `0.0.54`."}]}}
+{"role":"assistant","message":{"content":[{"type":"text","text":"Done. Released **v0.0.54** — commit and tag pushed successfully."}]}}
