@@ -179,3 +179,5 @@
 {"role":"assistant","message":{"content":[{"type":"text","text":"Done. Three changes:\n\n1. **Debug slider is now in-memory only** — moving the slider updates `plantData.debugDays` in memory and re-renders, but no longer saves it to `chrome.storage.local`. Closing the tab resets it.\n2. **Old persisted values cleaned up** — on load, any leftover `debugDays` in stored `plantData` is deleted before use.\n3. **Export strips `debugDays`** — even if somehow present in storage, `debugDays` is removed from `plantData` during export so it won't appear in exported settings or be imported."}]}}
 {"role":"user","message":{"content":[{"type":"text","text":"<user_query>\ntcp\n</user_query>"}]}}
 {"role":"assistant","message":{"content":[{"type":"text","text":"Next version: `v0.0.57`."}]}}
+{"role":"assistant","message":{"content":[{"type":"text","text":"Push failed — looks like your hardware security key isn't plugged in. Please plug in your key and I'll retry."}]}}
+{"role":"assistant","message":{"content":[{"type":"text","text":"Released **v0.0.57** — debug days are now ephemeral (in-memory only) and excluded from export/import."}]}}
