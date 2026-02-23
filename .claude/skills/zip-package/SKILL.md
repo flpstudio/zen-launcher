@@ -35,7 +35,7 @@ cd /Users/paunin/Sites/zen-launcher && zip -r ~/Desktop/zen-launcher-vX.Y.Z.zip 
 
 ## What to exclude
 
-- `.git/`, `.github/`, `.cursor/`
+- `.git/`, `.github/`, `.claude/`
 - `images/` (screenshots, not part of the extension)
 - `README.md`, `LICENSE`
 - `.DS_Store`
