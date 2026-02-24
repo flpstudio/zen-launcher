@@ -23,6 +23,10 @@ function shuffleArray(array) {
 }
 
 async function fetchHistoryEvents() {
+  if (document.body.classList.contains('corporate-user')) {
+    return fetchCorporateEvents();
+  }
+
   const now = new Date();
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
@@ -57,6 +61,41 @@ async function fetchHistoryEvents() {
     return shuffled;
   } catch (error) {
     console.error('[History] Fetch error:', error);
+    return [];
+  }
+}
+
+// Fetch corporate press releases from Fujitsu RSS feed
+async function fetchCorporateEvents() {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const rssUrl = `https://fujitsu-on-day.flp.studio/rss?date=${month}-${day}`;
+
+  try {
+    const response = await fetch(rssUrl);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const xmlText = await response.text();
+    const { items } = parseRssFeed(xmlText);
+
+    const events = items.map((item, index) => {
+      const pubDate = item.pubDate ? new Date(item.pubDate) : null;
+      const year = pubDate ? pubDate.getFullYear() : now.getFullYear();
+      const yearsAgo = now.getFullYear() - year;
+
+      return {
+        id: `corporate-${index}`,
+        title: item.title,
+        year,
+        yearsAgo,
+        url: item.url,
+        image: null
+      };
+    });
+
+    return shuffleArray(events);
+  } catch (error) {
+    console.error('[History] Corporate RSS fetch error:', error);
     return [];
   }
 }
@@ -146,15 +185,18 @@ function renderNewsItem() {
   const item1 = newsItems[currentNewsIndex];
   const item2 = newsItems.length > 1 ? newsItems[(currentNewsIndex + 1) % newsItems.length] : null;
   
+  const isCorporate = document.body.classList.contains('corporate-user');
+
   const buildItemHtml = (item) => {
     const yearsAgoText = formatYearsAgo(item.yearsAgo);
-    const visualHtml = item.image 
-      ? `<img src="${escapeHtml(item.image)}" alt="" class="news-item-image">` 
-      : `<div class="news-item-year">${item.year}</div>`;
-    
+    const corporateOverlay = isCorporate ? '<img src="icons/fujitsu.png" alt="" class="news-item-corp-icon">' : '';
+    const visualHtml = item.image
+      ? `<img src="${escapeHtml(item.image)}" alt="" class="news-item-image">`
+      : `<div class="news-item-year">${item.year}${corporateOverlay}</div>`;
+
     const wrapperTag = item.url ? 'a' : 'div';
     const wrapperAttrs = item.url ? `href="${escapeHtml(item.url)}" target="_blank"` : '';
-    
+
     return `
       <${wrapperTag} class="news-item" ${wrapperAttrs}>
         <div class="news-item-visual">${visualHtml}</div>

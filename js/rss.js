@@ -19,7 +19,7 @@ const RSS_PRESETS_NYT = [
 
 
 function getDefaultRssUrl() {
-  return document.body.classList.contains('corporate-user') ? CORPORATE_RSS_URL : DEFAULT_RSS_URL;
+  return DEFAULT_RSS_URL;
 }
 let rssItems = [];
 let currentRssIndex = 0;

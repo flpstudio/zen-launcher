@@ -386,7 +386,7 @@ body.onboarding-active .bg-settings-btn {
   font-family: inherit;
   font-size: 0.8rem;
   font-weight: 500;
-  padding: 10px 10px;
+  padding: 10px 7px;
   cursor: pointer;
   transition: color 0.2s;
   border-bottom: 2px solid transparent;
@@ -6470,6 +6470,16 @@ a.wotd-definition:hover {
   backdrop-filter: blur(8px);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   white-space: nowrap;
+  position: relative;
+}
+
+.news-item-corp-icon {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  width: 18px;
+  height: auto;
+  object-fit: contain;
 }
 
 .news-item-content {

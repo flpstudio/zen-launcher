@@ -414,6 +414,36 @@ function initSettingsModal() {
     if (debugExitBtn) {
       debugExitBtn.addEventListener('click', hideDebug);
     }
+
+    // Corporate user debug toggle
+    const corpToggle = document.getElementById('debugCorporateToggle');
+    if (corpToggle) {
+      corpToggle.checked = document.body.classList.contains('corporate-user');
+      corpToggle.addEventListener('change', () => {
+        document.body.classList.toggle('corporate-user', corpToggle.checked);
+        chrome.storage.local.set({ debugCorporateUser: corpToggle.checked });
+        if (corpToggle.checked) {
+          enforceCorporateNewsTicker();
+        } else {
+          // Unlock news ticker toggle
+          const row = document.querySelector('.widget-toggle-row[data-widget="newsTicker"]');
+          if (row) {
+            const cb = row.querySelector('input[type="checkbox"]');
+            if (cb) cb.disabled = false;
+            row.classList.remove('corporate-locked');
+          }
+        }
+        enforceSystemStatsDependency();
+      });
+      // Restore saved debug override
+      chrome.storage.local.get('debugCorporateUser', (r) => {
+        if (r.debugCorporateUser !== undefined) {
+          corpToggle.checked = r.debugCorporateUser;
+          document.body.classList.toggle('corporate-user', r.debugCorporateUser);
+          if (r.debugCorporateUser) enforceCorporateNewsTicker();
+        }
+      });
+    }
   })();
 
   // Load widget visibility and apply toggles
@@ -560,6 +590,24 @@ function initSettingsModal() {
     });
   }
 
+  // Clear cache button
+  const clearCacheBtn = document.getElementById('clearCacheBtn');
+  if (clearCacheBtn) {
+    clearCacheBtn.addEventListener('click', () => {
+      chrome.storage.local.get(null, (data) => {
+        const updated = { ...data };
+        delete updated[CACHE_STORAGE_KEY];
+        delete updated.historyIndex;
+        delete updated.rssIndex;
+        chrome.storage.local.clear(() => {
+          chrome.storage.local.set(updated, () => {
+            window.location.reload();
+          });
+        });
+      });
+    });
+  }
+
   // Reset all data button
   const resetBtn = document.getElementById('resetAllDataBtn');
   if (resetBtn) {
@@ -641,6 +689,16 @@ function enforceCorporateNewsTicker() {
     vis.newsTicker = true;
     chrome.storage.local.set({ widgetVisibility: vis });
   });
+  // Re-fetch news from corporate RSS source if ticker was already initialized
+  if (initializedWidgets.has('newsTicker')) {
+    loadHistoryFresh().then(events => {
+      if (events && events.length > 0) {
+        newsItems = events;
+        currentNewsIndex = 0;
+        renderNewsItem();
+      }
+    });
+  }
 }
 
 function applyWidgetVisibility(key, visible) {
