@@ -12,6 +12,7 @@ const WIDGET_MAP = {
   lifeCounter: ['lifeCounter'],
   notesTodo: ['notesTodoWidget'],
   newsTicker: ['newsTicker'],
+  systemStats: ['systemStats'],
   gmail: ['gmailHeader', 'meetingsSection', 'gmailContent'],
   hackerNews: ['hnWidget'],
   wordOfDay: ['wotdPanel'],
@@ -38,11 +39,21 @@ const EXCLUDED_EXPORT_KEYS = [
 
 // Widget layout presets
 const WIDGET_PRESETS = {
-  zen: [],
-  starter: ['weather', 'wordOfDay', 'hackerNews', 'notesTodo', 'newsTicker'],
-  productive: ['popularSites', 'weather', 'wordOfDay', 'assets', 'fearGreed', 'aiChat', 'gmail', 'notesTodo', 'newsTicker'],
+  zen: ['wordOfDay','plant'],
+  starter: ['rssFeed','weather','lifeCounter', 'aiChat', 'notesTodo', 'newsTicker', 'systemStats'],
+  productive: ['popularSites', 'assets', 'fearGreed', 'soundsBar', 'aiChat', 'gmail', 'notesTodo'],
   fullDeck: Object.keys(WIDGET_MAP),
-  explorer: ['rssFeed', 'popularSites', 'weather', 'wordOfDay', 'soundsBar', 'hackerNews', 'newsTicker'],
+  explorer: ['rssFeed', 'popularSites', 'weather', 'wordOfDay', 'assets', 'hackerNews','aiChat', 'gmail','newsTicker'],
+};
+
+// Column alignment per preset
+const DEFAULT_PRESET_ALIGNMENT = { left: 'top', middle: 'top', right: 'top' };
+const PRESET_ALIGNMENTS = {
+  zen:        { left: 'bottom', middle: 'top', right: 'top' },
+  starter:    DEFAULT_PRESET_ALIGNMENT,
+  productive: DEFAULT_PRESET_ALIGNMENT,
+  explorer:   DEFAULT_PRESET_ALIGNMENT,
+  fullDeck:   DEFAULT_PRESET_ALIGNMENT,
 };
 
 // Widget key -> init function(s) mapping for lazy loading
@@ -57,6 +68,7 @@ const WIDGET_INIT_MAP = {
   lifeCounter:  () => initLifeCounter(),
   notesTodo:    () => initNotesTodo(),
   newsTicker:   () => initNews(),
+  systemStats:  () => initSystemStats(),
   gmail:        () => { initGmail(); initEmailPreview(); initMeetings(); },
   hackerNews:   () => initHackerNews(),
   wordOfDay:    () => initWordOfDay(),
@@ -434,15 +446,17 @@ function initSettingsModal() {
       applyWidgetVisibility(key, checkbox.checked);
 
       checkbox.addEventListener('change', () => {
+        applyWidgetVisibility(key, checkbox.checked);
+        if (key === 'newsTicker') enforceSystemStatsDependency();
         const vis = getWidgetVisibilityFromDOM();
         chrome.storage.local.set({ widgetVisibility: vis });
-        applyWidgetVisibility(key, checkbox.checked);
         updateToggleAllState();
         selectPresetRadio(detectPresetFromVisibility(vis));
       });
     });
 
     updateToggleAllState();
+    enforceSystemStatsDependency();
     // Detect and select the matching preset on load
     selectPresetRadio(detectPresetFromVisibility(visibility));
   });
@@ -459,6 +473,7 @@ function initSettingsModal() {
         applyWidgetVisibility(key, checked);
       });
       if (document.body.classList.contains('corporate-user')) enforceCorporateNewsTicker();
+      enforceSystemStatsDependency();
       const vis = getWidgetVisibilityFromDOM();
       chrome.storage.local.set({ widgetVisibility: vis });
       selectPresetRadio(detectPresetFromVisibility(vis));
@@ -479,9 +494,11 @@ function initSettingsModal() {
         applyWidgetVisibility(key, cb.checked);
       });
       if (document.body.classList.contains('corporate-user')) enforceCorporateNewsTicker();
+      enforceSystemStatsDependency();
       const updatedVis = getWidgetVisibilityFromDOM();
       chrome.storage.local.set({ widgetVisibility: updatedVis });
       updateToggleAllState();
+      applyPresetAlignments(presetName);
     });
   });
 
@@ -585,6 +602,27 @@ function getWidgetVisibilityFromDOM() {
     if (key && checkbox) vis[key] = checkbox.checked;
   });
   return vis;
+}
+
+function enforceSystemStatsDependency() {
+  const newsRow = document.querySelector('.widget-toggle-row[data-widget="newsTicker"]');
+  const newsCb = newsRow ? newsRow.querySelector('input[type="checkbox"]') : null;
+  const newsEnabled = newsCb ? newsCb.checked : false;
+
+  const statsRow = document.querySelector('.widget-toggle-row[data-widget="systemStats"]');
+  if (!statsRow) return;
+  const statsCb = statsRow.querySelector('input[type="checkbox"]');
+  if (!statsCb) return;
+
+  if (!newsEnabled) {
+    statsCb.checked = false;
+    statsCb.disabled = true;
+    statsRow.classList.add('corporate-locked');
+    applyWidgetVisibility('systemStats', false);
+  } else {
+    statsCb.disabled = false;
+    statsRow.classList.remove('corporate-locked');
+  }
 }
 
 function enforceCorporateNewsTicker() {
@@ -716,6 +754,25 @@ function initColumnAlignmentSettings() {
       chrome.storage.local.set({ [storageKey]: align });
     });
   });
+}
+
+function applyPresetAlignments(presetName) {
+  const aligns = PRESET_ALIGNMENTS[presetName] || DEFAULT_PRESET_ALIGNMENT;
+  const storageUpdate = {};
+  ['left', 'middle', 'right'].forEach(col => {
+    const align = aligns[col];
+    applyColumnAlignment(col, align);
+    const storageKey = 'align' + col.charAt(0).toUpperCase() + col.slice(1);
+    storageUpdate[storageKey] = align;
+    // Update button active states
+    const group = document.querySelector(`.column-align-col[data-align-column="${col}"]`);
+    if (group) {
+      group.querySelectorAll('.align-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.align === align);
+      });
+    }
+  });
+  chrome.storage.local.set(storageUpdate);
 }
 
 const MIDDLE_PANEL_WIDGETS = ['soundsBar', 'lifeCounter', 'hackerNews', 'aiChat'];
@@ -867,8 +924,7 @@ async function init() {
   // Initialize column alignment settings
   initColumnAlignmentSettings();
   
-  // Initialize system stats
-  initSystemStats();
+  // System stats are now lazy-loaded via WIDGET_INIT_MAP
 
   // Initialize Google auth UI (always, regardless of gmail widget state)
   initGoogleAuth();

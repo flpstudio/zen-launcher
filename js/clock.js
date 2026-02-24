@@ -119,7 +119,7 @@ async function getSavedTimezones() {
       return;
     }
     chrome.storage.local.get(['worldTimezones'], (result) => {
-      resolve(result.worldTimezones || DEFAULT_TIMEZONES);
+      resolve(result.worldTimezones || []);
     });
   });
 }
@@ -138,7 +138,7 @@ async function saveTimezones(timezones) {
 // Clock display settings
 let clockFormat = '24h';
 let clockShowSeconds = false;
-let clockDateView = 'calendar';
+let clockDateView = 'date';
 let clockDateFormat = 'dd Month, yyyy';
 
 // Focus mode state

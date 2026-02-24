@@ -75,7 +75,7 @@
           <div class="clock-setting-row">
             <span data-i18n="clockShowCalendar">Calendar</span>
             <label class="widget-toggle-switch">
-              <input type="checkbox" id="clockCalendarToggle" checked>
+              <input type="checkbox" id="clockCalendarToggle">
               <span class="widget-toggle-slider"></span>
             </label>
           </div>
@@ -731,12 +731,12 @@
                 <span class="widget-preset-label" data-i18n="presetProductive">Productive</span>
               </label>
               <label class="widget-preset-option">
-                <input type="radio" name="widgetPreset" value="fullDeck">
-                <span class="widget-preset-label" data-i18n="presetFullDeck">Full Deck</span>
-              </label>
-              <label class="widget-preset-option">
                 <input type="radio" name="widgetPreset" value="explorer">
                 <span class="widget-preset-label" data-i18n="presetExplorer">Explorer</span>
+              </label>
+              <label class="widget-preset-option">
+                <input type="radio" name="widgetPreset" value="fullDeck">
+                <span class="widget-preset-label" data-i18n="presetFullDeck">Full Deck</span>
               </label>
               <label class="widget-preset-option">
                 <input type="radio" name="widgetPreset" value="custom">
@@ -802,6 +802,10 @@
           <div class="widget-group-label" data-i18n="bottomPanel">Bottom</div>
           <div class="widget-toggle-row" data-widget="newsTicker">
             <span class="widget-toggle-label" data-i18n="widgetHistoryTicker">This Day in History</span>
+            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
+          </div>
+          <div class="widget-toggle-row" data-widget="systemStats">
+            <span class="widget-toggle-label" data-i18n="widgetSystemStats">System Stats</span>
             <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
           </div>
           <div class="widget-toggle-row" data-widget="plant">
