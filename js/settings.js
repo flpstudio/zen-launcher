@@ -337,12 +337,17 @@ function initSettingsModal() {
   // Close button
   closeBtn.addEventListener('click', closeSettingsModal);
 
+  // Mini gear button opens settings
+  const miniGear = document.getElementById('miniGearBtn');
+  if (miniGear) miniGear.addEventListener('click', openSettingsModal);
+
   // Click outside panel to close
   document.addEventListener('click', (e) => {
     if (modal.classList.contains('open') && !modal.contains(e.target)) {
-      // Don't close if click was on the settings button that opens it
+      // Don't close if click was on a settings button that opens it
       const settingsBtn = document.getElementById('bgSettingsBtn');
       if (settingsBtn && settingsBtn.contains(e.target)) return;
+      if (miniGear && miniGear.contains(e.target)) return;
       closeSettingsModal();
     }
   });
@@ -878,15 +883,7 @@ function updateControlsPosition() {
   // Toggle body class so CSS (including media queries) can respond
   document.body.classList.toggle('ticker-hidden', tickerHidden);
 
-  // Also set inline styles for large screens where no media query applies
-  const controls = document.getElementById('bgControls');
-  if (controls) {
-    if (tickerHidden) {
-      controls.style.setProperty('bottom', '6px', 'important');
-    } else {
-      controls.style.removeProperty('bottom');
-    }
-  }
+  // Controls positioning is handled by CSS using body.ticker-hidden class
 
   const leftPanels = document.querySelector('.left-panels-container');
   if (leftPanels) {

@@ -16,7 +16,7 @@
 
 .onboarding-overlay {
   position: fixed;
-  bottom: 50px;
+  bottom: 66px;
   left: 14px;
   z-index: 90;
   pointer-events: auto;
@@ -269,6 +269,11 @@ body {
   -webkit-backdrop-filter: blur(10px);
 }
 
+/* When ticker is hidden, move controls to bottom */
+body.ticker-hidden .bg-controls {
+  bottom: 6px;
+}
+
 .bg-settings-btn,
 .bg-refresh-btn {
   width: 28px;
@@ -326,6 +331,49 @@ body {
 body.onboarding-active .bg-settings-btn {
   opacity: 0.5;
   pointer-events: auto;
+}
+
+/* ============ Mini Gear (always-visible corner dot) ============ */
+.mini-gear-btn {
+  position: fixed;
+  bottom: 68px; /* 66px ticker + 2px margin */
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0.25;
+  z-index: 209;
+  transition: opacity 0.3s;
+}
+
+.mini-gear-btn svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+/* When ticker is hidden, push to very bottom corner */
+body.ticker-hidden .mini-gear-btn {
+  bottom: 2px;
+}
+
+/* Hide mini gear when bg-controls panel is hovered (main gear visible) */
+.bg-controls:hover ~ .mini-gear-btn {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Hide during onboarding (main gear is already shown) */
+body.onboarding-active .mini-gear-btn {
+  display: none;
 }
 
 /* ============ Settings Modal ============ */
@@ -6355,6 +6403,10 @@ a.wotd-definition:hover {
   body.ticker-hidden .bg-controls {
     bottom: 6px !important;
   }
+
+  body.ticker-hidden .mini-gear-btn {
+    bottom: 2px !important;
+  }
 }
 
 /* Small screens: hide all right panel widgets except clock */
@@ -6387,6 +6439,10 @@ a.wotd-definition:hover {
   .bg-controls {
     bottom: 6px !important;
   }
+
+  .mini-gear-btn {
+    bottom: 2px !important;
+  }
 }
 
 /* ============ News Ticker ============ */
@@ -6396,7 +6452,7 @@ a.wotd-definition:hover {
   bottom: 0;
   left: 0;
   right: 0;
-  min-height: 50px;
+  height: 66px;
   background: rgba(0, 0, 0, var(--widget-bg-alpha));
   backdrop-filter: blur(var(--widget-blur));
   -webkit-backdrop-filter: blur(var(--widget-blur));
