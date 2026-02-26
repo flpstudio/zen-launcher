@@ -693,6 +693,24 @@ body.onboarding-active .mini-gear-btn {
   pointer-events: none;
 }
 
+.corporate-watermark {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0px;
+  margin: 10px;
+  padding: 0;
+  width: 40px;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 9999;
+  transform: none;
+}
+
+body.corporate-user .corporate-watermark {
+  display: block;
+}
+
 /* Data tab */
 .settings-data-section {
   margin-bottom: 0;
