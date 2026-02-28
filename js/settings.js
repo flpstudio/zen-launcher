@@ -13,7 +13,6 @@ const WIDGET_MAP = {
   notesTodo: ['notesTodoWidget'],
   newsTicker: ['newsTicker'],
   systemStats: ['systemStats'],
-  gmail: ['gmailHeader', 'meetingsSection', 'gmailContent'],
   hackerNews: ['hnWidget'],
   wordOfDay: ['wotdPanel'],
   plant: ['plantWrap'],
@@ -28,8 +27,6 @@ const DEFAULT_WIDGET_VISIBILITY = Object.fromEntries(
 const EXCLUDED_EXPORT_KEYS = [
   'aiApiKey',
   'aiChatHistory',
-  'gmailAccessToken',
-  'googleSignedIn',
   'backgroundImageData',
   'dataCache',
   'focusEndTime',
@@ -41,9 +38,9 @@ const EXCLUDED_EXPORT_KEYS = [
 const WIDGET_PRESETS = {
   zen: ['wordOfDay','plant'],
   starter: ['rssFeed','weather','lifeCounter', 'aiChat', 'notesTodo', 'newsTicker', 'systemStats'],
-  productive: ['popularSites', 'assets', 'fearGreed', 'soundsBar', 'aiChat', 'gmail', 'notesTodo'],
+  productive: ['popularSites', 'assets', 'fearGreed', 'soundsBar', 'aiChat', 'notesTodo'],
   fullDeck: Object.keys(WIDGET_MAP),
-  explorer: ['rssFeed', 'popularSites', 'weather', 'wordOfDay', 'assets', 'hackerNews','aiChat', 'gmail','newsTicker'],
+  explorer: ['rssFeed', 'popularSites', 'weather', 'wordOfDay', 'assets', 'hackerNews','aiChat','newsTicker'],
 };
 
 // Column alignment per preset
@@ -69,7 +66,6 @@ const WIDGET_INIT_MAP = {
   notesTodo:    () => initNotesTodo(),
   newsTicker:   () => initNews(),
   systemStats:  () => initSystemStats(),
-  gmail:        () => { initGmail(); initEmailPreview(); initMeetings(); },
   hackerNews:   () => initHackerNews(),
   wordOfDay:    () => initWordOfDay(),
   plant:        () => initPlant(),
@@ -727,10 +723,6 @@ function applyWidgetVisibility(key, visible) {
     WIDGET_INIT_MAP[key]();
     initializedWidgets.add(key);
   }
-  // Toggle gmail-hidden body class for responsive layout
-  if (key === 'gmail') {
-    document.body.classList.toggle('gmail-hidden', !visible);
-  }
   // Auto-hide panel containers when all their children are off
   updateLeftPanelsContainer();
   updateMiddlePanelsContainer();
@@ -754,7 +746,7 @@ const COLUMN_TARGETS = {
 const EXPANDING_WIDGETS = {
   left: [],
   middle: ['aiChatPanel'],
-  right: ['gmailContent', 'notesTodoWidget']
+  right: ['notesTodoWidget']
 };
 // Current alignment state (loaded from storage)
 const columnAlignState = { left: 'top', middle: 'top', right: 'top' };
@@ -763,7 +755,6 @@ function hasVisibleExpandingWidget(column) {
   return EXPANDING_WIDGETS[column].some(id => {
     const el = document.getElementById(id);
     if (!el) return false;
-    // Use computed style to catch CSS-class-based hiding (e.g. .not-signed-in)
     return getComputedStyle(el).display !== 'none';
   });
 }
@@ -980,9 +971,6 @@ async function init() {
   initColumnAlignmentSettings();
   
   // System stats are now lazy-loaded via WIDGET_INIT_MAP
-
-  // Initialize Google auth UI (always, regardless of gmail widget state)
-  initGoogleAuth();
 
   // Lazy-load widgets: only initialize enabled ones (skip if already initialized)
   chrome.storage.local.get('widgetVisibility', (data) => {

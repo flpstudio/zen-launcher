@@ -195,8 +195,6 @@ body.widgets-loading #soundsBar,
 body.widgets-loading #aiChatPanel,
 body.widgets-loading #newsTicker,
 body.widgets-loading #notesTodoWidget,
-body.widgets-loading #gmailPanel,
-body.widgets-loading #meetingsSection,
 body.widgets-loading #hnWidget {
   display: none !important;
 }
@@ -319,6 +317,11 @@ body.ticker-hidden .bg-controls {
 
 .bg-refresh-btn.loading svg {
   animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* Keep gear visible when settings modal is open */
@@ -475,20 +478,21 @@ body.onboarding-active .mini-gear-btn {
   min-height: 0;
 }
 
-/* Language picker above footer */
+/* Language picker slides down below header */
 .settings-lang-picker {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease, padding 0.3s ease;
   padding: 0 24px;
   background: rgba(255, 255, 255, 0.03);
-  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  flex-shrink: 0;
 }
 
 .settings-lang-picker.open {
   max-height: 200px;
   padding: 10px 24px;
-  border-top-color: rgba(255, 255, 255, 0.08);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
 .lang-picker-grid {
@@ -532,137 +536,33 @@ body.onboarding-active .mini-gear-btn {
   white-space: nowrap;
 }
 
-.settings-modal-footer {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  flex-shrink: 0;
-}
-
-.settings-modal-footer .settings-google-signin,
-.settings-modal-footer .settings-google-signout {
-  flex: 1;
-  min-width: 0;
-}
-
 .settings-lang-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
   color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s, color 0.2s;
   padding: 0;
+  margin-top: 6px;
 }
 
 .settings-lang-btn:hover,
 .settings-lang-btn.active {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
   color: rgba(255, 255, 255, 0.9);
 }
 
 .lang-btn-flag {
   font-size: 16px;
   line-height: 1;
-}
-
-.settings-google-signin {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.8);
-  font-family: inherit;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.settings-google-signin:hover {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.settings-google-signin:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.settings-google-signin svg {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
-
-.settings-google-signout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  width: 100%;
-  padding: 9px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.7);
-  font-family: inherit;
-  cursor: pointer;
-  overflow: hidden;
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.settings-google-signout:hover {
-  background: rgba(220, 80, 80, 0.12);
-  border-color: rgba(220, 80, 80, 0.25);
-}
-
-.signout-user-name {
-  font-size: 0.8rem;
-  opacity: 0.6;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: opacity 0.2s;
-}
-
-.settings-google-signout:hover .signout-user-name {
-  opacity: 0;
-}
-
-.signout-hover-label {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-size: 0.8rem;
-  color: rgba(230, 100, 100, 0.9);
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.signout-hover-label svg {
-  width: 15px;
-  height: 15px;
-}
-
-.settings-google-signout:hover .signout-hover-label {
-  opacity: 1;
 }
 
 .settings-tab-panel {
@@ -673,7 +573,7 @@ body.onboarding-active .mini-gear-btn {
   display: block;
 }
 
-/* App info bar (above footer, Data tab only) */
+/* App info bar (Data tab only) */
 .settings-app-info {
   display: flex;
   justify-content: space-between;
@@ -1246,7 +1146,7 @@ body.corporate-user .corporate-watermark {
 
 /* ============ Clock Panel ============ */
 
-/* Right Panels Container (Clock, Calendar, Gmail, Notes) */
+/* Right Panels Container (Clock, Calendar, Notes) */
 .right-panels-container {
   position: fixed;
   top: 10px;
@@ -2275,17 +2175,6 @@ body.left-hidden .middle-panels-container {
   min-height: 0;
 }
 
-.calendar-panel.not-signed-in {
-  overflow: hidden;
-}
-
-/* Hide meetings & gmail when not signed in */
-.calendar-panel.not-signed-in .meetings-section,
-.calendar-panel.not-signed-in .gmail-header,
-.calendar-panel.not-signed-in .gmail-content {
-  display: none !important;
-}
-
 .calendar-months {
   display: flex;
   gap: 12px;
@@ -2361,146 +2250,6 @@ body.left-hidden .middle-panels-container {
 
 .calendar-day.weekend.today {
   opacity: 1;
-}
-
-/* ============ Meetings Section ============ */
-
-.meetings-section {
-  margin-top: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  width: 100%;
-  flex-shrink: 0;
-  overflow-y: auto;
-  max-height: 35vh;
-  padding: 4px 8px 2px 8px;
-  background: transparent;
-}
-
-.meetings-section::-webkit-scrollbar {
-  width: 6px;
-}
-
-.meetings-section::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.meetings-section::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 3px;
-  transition: background 0.3s;
-}
-
-.meetings-section:hover::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.meetings-section::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.meetings-loading,
-.meetings-empty,
-.meetings-error {
-  font-size: 0.7rem;
-  opacity: 0.5;
-  text-align: right;
-  padding: 8px 0;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.meeting-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 6px;
-  background: rgba(0, 0, 0, var(--widget-bg-alpha));
-  backdrop-filter: blur(var(--widget-blur));
-  -webkit-backdrop-filter: blur(var(--widget-blur));
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.meeting-item:hover {
-  background: rgba(0, 0, 0, calc(var(--widget-bg-alpha) + 0.1));
-}
-
-.meeting-time {
-  font-size: 0.7rem;
-  font-weight: 600;
-  opacity: 0.8;
-  min-width: 45px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-  font-feature-settings: 'tnum' 1;
-}
-
-.meeting-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.meeting-title {
-  font-size: 0.75rem;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.meeting-countdown {
-  font-size: 0.65rem;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.15);
-  white-space: nowrap;
-  font-feature-settings: 'tnum' 1;
-}
-
-.meeting-countdown.warning {
-  background: rgba(255, 193, 7, 0.25);
-  color: #ffc107;
-}
-
-.meeting-countdown.soon {
-  background: rgba(255, 87, 34, 0.3);
-  color: #ff7043;
-}
-
-.meeting-countdown.now {
-  background: rgba(76, 175, 80, 0.3);
-  color: #81c784;
-}
-
-.meeting-item.has-link {
-  cursor: pointer;
-}
-
-.meeting-item.has-link:hover .meeting-link {
-  opacity: 1;
-  color: #4CAF50;
-}
-
-.meeting-link {
-  opacity: 0.7;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  padding: 4px;
-  border-radius: 4px;
-}
-
-.meeting-link:hover {
-  opacity: 1;
-  background: rgba(76, 175, 80, 0.2);
-}
-
-.meeting-link svg {
-  width: 16px;
-  height: 16px;
 }
 
 .tz-icon {
@@ -4870,267 +4619,6 @@ body.ticker-hidden .right-panels-container {
   text-align: center;
 }
 
-/* ============ Gmail (Unified with Calendar) ============ */
-
-.gmail-header {
-  display: flex;
-  align-items: center;
-  padding: 6px 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  gap: 6px;
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  flex-shrink: 0;
-}
-
-.gmail-icon {
-  width: 14px;
-  height: 14px;
-  opacity: 0.8;
-}
-
-.gmail-title {
-  font-weight: 600;
-  font-size: 0.8rem;
-  flex: 1;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-  line-height: 1;
-}
-
-.gmail-refresh {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 8px;
-  opacity: 0.7;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.gmail-refresh:hover {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.gmail-refresh svg {
-  width: 18px;
-  height: 18px;
-}
-
-.gmail-refresh.spinning svg {
-  animation: spin 1s linear infinite;
-}
-
-.gmail-meet {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 8px;
-  opacity: 0.7;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.gmail-meet:hover {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.gmail-meet svg {
-  width: 18px;
-  height: 18px;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.gmail-content {
-  flex: 1 1 0;
-  overflow-y: auto;
-  padding: 2px 8px 8px 8px;
-  background: transparent;
-}
-
-.gmail-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.gmail-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.gmail-content::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 3px;
-  transition: background 0.3s;
-}
-
-.gmail-content:hover::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.gmail-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.gmail-loading,
-.gmail-error,
-.gmail-empty {
-  padding: 40px 20px;
-  text-align: center;
-  opacity: 0.6;
-  font-size: 0.9rem;
-}
-
-.gmail-signin {
-  margin: 16px;
-  padding: 12px 24px;
-  background: #4285f4;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.gmail-signin:hover {
-  background: #3367d6;
-}
-
-/* Email Item - same horizontal padding as .meeting-item for alignment */
-.email-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  margin: 3px 0;
-  cursor: pointer;
-  transition: background 0.2s;
-  background: rgba(0, 0, 0, var(--widget-bg-alpha));
-  backdrop-filter: blur(var(--widget-blur));
-  -webkit-backdrop-filter: blur(var(--widget-blur));
-  border-radius: 5px;
-}
-
-.email-item:hover {
-  background: rgba(0, 0, 0, calc(var(--widget-bg-alpha) + 0.1));
-}
-
-.email-item-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.email-open-btn {
-  flex-shrink: 0;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-  opacity: 0;
-  transition: opacity 0.2s, background 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.email-open-btn svg {
-  width: 14px;
-  height: 14px;
-}
-
-.email-item:hover .email-open-btn {
-  opacity: 0.5;
-}
-
-.email-open-btn:hover {
-  opacity: 1 !important;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.email-item:last-child {
-  margin-bottom: 6px;
-}
-
-.email-item.unread {
-  background: rgba(0, 0, 0, calc(var(--widget-bg-alpha) + 0.1));
-}
-
-.email-item.unread .email-subject {
-  font-weight: 600;
-}
-
-.email-item.unread .email-from {
-  font-weight: 600;
-}
-
-.email-first-line {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.email-unread-dot {
-  width: 5px;
-  height: 5px;
-  background: #4285f4;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.email-from {
-  font-size: 0.75rem;
-  font-weight: 500;
-  opacity: 0.9;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-  flex-shrink: 0;
-  max-width: 35%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.email-subject {
-  font-size: 0.8rem;
-  font-weight: 400;
-  opacity: 0.7;
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-}
-
-.email-preview {
-  font-size: 0.7rem;
-  opacity: 0.5;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 400;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-  line-height: 1.3;
-}
-
 /* ============ Grayscale-on-idle widgets ============ */
 /*
  * Rule: never put filter on an ancestor of an element with backdrop-filter,
@@ -5162,10 +4650,6 @@ body.grayscale-idle .nt-board-col > *,
 /* --- AI Chat: container has backdrop, input container also → target inner > * --- */
 body.grayscale-idle .ai-chat-panel > *:not(.ai-chat-input-container),
 body.grayscale-idle .ai-chat-input-container > *,
-/* --- Gmail: header is safe, items have backdrop → target item > * --- */
-body.grayscale-idle .gmail-header > *,
-body.grayscale-idle .meeting-item > *,
-body.grayscale-idle .email-item > *,
 /* --- Plant: standalone canvas, no backdrop-filter → apply directly --- */
 body.grayscale-idle #plantWrap {
   filter: grayscale(1);
@@ -5189,10 +4673,7 @@ body.grayscale-idle .notes-todo-widget:hover .nt-header,
 body.grayscale-idle .notes-todo-widget:hover .nt-todo-item > *,
 body.grayscale-idle .notes-todo-widget:hover .nt-board-col > *,
 body.grayscale-idle .ai-chat-panel:hover > *:not(.ai-chat-input-container),
-body.grayscale-idle .ai-chat-panel:hover .ai-chat-input-container > *,
-body.grayscale-idle .gmail-header:hover > *,
-body.grayscale-idle .meeting-item:hover > *,
-body.grayscale-idle .email-item:hover > * {
+body.grayscale-idle .ai-chat-panel:hover .ai-chat-input-container > * {
   filter: grayscale(0);
 }
 
@@ -6117,223 +5598,6 @@ a.wotd-definition:hover {
 }
 
 
-/* Medium screens: give notes more space when not signed in */
-@media (max-width: 1200px) and (min-width: 851px) {
-  .calendar-panel.not-signed-in .notes-todo-widget {
-    flex: 1 1 0;
-    min-height: 0;
-    overflow: hidden;
-  }
-}
-
-/* ============ Email Preview Modal ============ */
-
-.email-modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  box-sizing: border-box;
-}
-
-.email-modal.visible {
-  display: flex;
-}
-
-.email-modal-content {
-  background: rgba(15, 15, 25, 0.55);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  width: 1120px;
-  max-width: 95vw;
-  height: 85vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
-}
-
-.email-modal-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 20px 24px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  flex-shrink: 0;
-  opacity: 0.85;
-}
-
-.email-modal-subject {
-  flex: 1;
-  font-size: 1.05rem;
-  font-weight: 600;
-  line-height: 1.4;
-  word-break: break-word;
-}
-
-.email-modal-close {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.6rem;
-  cursor: pointer;
-  opacity: 0.5;
-  transition: opacity 0.2s;
-  line-height: 1;
-  flex-shrink: 0;
-  padding: 0 4px;
-}
-
-.email-modal-close:hover {
-  opacity: 1;
-}
-
-.email-modal-meta {
-  padding: 12px 24px;
-  font-size: 0.78rem;
-  line-height: 1.6;
-  opacity: 0.7;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  flex-shrink: 0;
-}
-
-.email-modal-meta .meta-label {
-  opacity: 0.5;
-  margin-right: 4px;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 0.65rem;
-  letter-spacing: 0.03em;
-}
-
-.email-modal-meta .meta-row {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 2px;
-}
-
-.email-modal-meta .meta-value {
-  word-break: break-all;
-}
-
-.email-modal-attachments {
-  display: none;
-  padding: 8px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  flex-shrink: 0;
-}
-
-.email-modal-attachments.has-attachments {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-}
-
-.attachment-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  font-size: 0.7rem;
-  opacity: 0.8;
-  cursor: default;
-}
-
-.attachment-chip svg {
-  width: 12px;
-  height: 12px;
-  opacity: 0.6;
-}
-
-.email-modal-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px 24px;
-  min-height: 150px;
-  opacity: 1;
-}
-
-.email-modal-body::-webkit-scrollbar {
-  width: 6px;
-}
-
-.email-modal-body::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.email-modal-body::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 3px;
-}
-
-.email-modal-body iframe {
-  width: 100%;
-  border: none;
-  background: white;
-  border-radius: 6px;
-}
-
-.email-modal-body .email-text-body {
-  font-size: 0.85rem;
-  line-height: 1.7;
-  white-space: pre-wrap;
-  word-break: break-word;
-  opacity: 0.9;
-}
-
-.email-modal-actions {
-  display: flex;
-  gap: 8px;
-  padding: 14px 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  flex-shrink: 0;
-  opacity: 0.85;
-}
-
-.email-action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 0.8rem;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.email-action-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.email-action-btn svg {
-  width: 16px;
-  height: 16px;
-}
-
-.email-action-btn.email-action-open:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
 /* Loading indicator */
 .loading-indicator {
   position: fixed;
@@ -6370,36 +5634,6 @@ a.wotd-definition:hover {
   
   .main-clock {
     font-size: 5.4rem;
-  }
-  
-  /* Stack Gmail and Meetings below calendar, full width with margins */
-  .panel.gmail-panel {
-    position: relative !important;
-    top: auto !important;
-    right: auto !important;
-    left: auto !important;
-    width: calc(100% - 20px) !important;
-    max-width: none !important;
-    margin: 10px auto 0 auto;
-    padding: 10px !important;
-  }
-  
-  .meetings-section {
-    max-width: none !important;
-    width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    max-height: 150px;
-    overflow-y: auto;
-  }
-  
-  .meeting-item {
-    width: 100% !important;
-    box-sizing: border-box;
-  }
-  
-  .meeting-title {
-    max-width: calc(100% - 80px);
   }
   
   /* Adjust news ticker */

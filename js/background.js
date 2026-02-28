@@ -149,8 +149,7 @@ function stopZenPulse() {
 
 const STORAGE_KEYS = {
   IMAGE_DATA: 'backgroundImageData',
-  IMAGE_DATE: 'backgroundImageDate',
-  GMAIL_TOKEN: 'gmailAccessToken'
+  IMAGE_DATE: 'backgroundImageDate'
 };
 
 // Get today's date as a string (YYYY-MM-DD)

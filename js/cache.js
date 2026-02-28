@@ -5,8 +5,6 @@ const CACHE_STORAGE_KEY = 'dataCache';
 
 // In-memory cache (loaded from storage on init)
 let dataCache = {
-  gmail: { data: null, timestamp: 0 },
-  meetings: { data: null, timestamp: 0 },
   weather: { data: null, timestamp: 0 },
   assets: { data: null, timestamp: 0 },
   fearGreed: { data: null, timestamp: 0 },

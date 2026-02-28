@@ -48,7 +48,7 @@
     </svg>
   </button>
 
-  <!-- Right Panels Container (Clock, Calendar, Meetings, Gmail, Notes) -->
+  <!-- Right Panels Container (Clock, Calendar, Notes) -->
   <div class="right-panels-container">
 
   <!-- Clock Panel -->
@@ -155,7 +155,7 @@
     </div>
   </div>
 
-  <!-- Calendar/Gmail Panel (Unified) -->
+  <!-- Calendar Panel -->
   <div class="calendar-panel" id="calendarPanel">
     <!-- Notes/Todo Widget -->
     <div class="notes-todo-widget" id="notesTodoWidget">
@@ -213,34 +213,6 @@
         </div>
       </div>
     </div>
-    <!-- Gmail Header -->
-    <div class="gmail-header" id="gmailHeader">
-      <svg class="gmail-icon" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-      </svg>
-      <span class="gmail-title" data-i18n="gmail">Gmail</span>
-      <button class="gmail-refresh" id="gmailRefresh" data-i18n-title="refresh" title="Refresh">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-        </svg>
-      </button>
-      <button class="gmail-meet" id="gmailMeet" data-i18n-title="instantMeeting" title="Instant Meeting (Alt+Shift+M)">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-        </svg>
-      </button>
-    </div>
-    <!-- Meetings Section -->
-    <div class="meetings-section" id="meetingsSection">
-      <div class="meetings-loading" data-i18n="loadingMeetings">Loading meetings...</div>
-    </div>
-    <!-- Gmail Content (Emails) -->
-    <div class="gmail-content" id="gmailContent">
-      <div class="gmail-loading" data-i18n="loading">Loading...</div>
-    </div>
-    <button class="gmail-signin" id="gmailSignIn" style="display: none;" data-i18n="signInGoogle">
-      Sign in with Google
-    </button>
   </div>
   </div><!-- /right-panels-container -->
 
@@ -375,26 +347,6 @@
     </div>
   </div><!-- /middle-panels-container -->
 
-  <!-- Email Preview Modal -->
-  <div class="email-modal" id="emailModal">
-    <div class="email-modal-content">
-      <div class="email-modal-header">
-        <div class="email-modal-subject" id="emailModalSubject"></div>
-        <button class="email-modal-close" id="emailModalClose">&times;</button>
-      </div>
-      <div class="email-modal-meta" id="emailModalMeta"></div>
-      <div class="email-modal-attachments" id="emailModalAttachments"></div>
-      <div class="email-modal-body" id="emailModalBody">
-        <div class="gmail-loading" data-i18n="loading">Loading...</div>
-      </div>
-      <div class="email-modal-actions">
-        <button class="email-action-btn email-action-open" id="emailOpenBtn" data-i18n-title="openInGmail" title="Open in Gmail">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
-          <span data-i18n="open">Open</span>
-        </button>
-      </div>
-    </div>
-  </div>
 
   <!-- Icon Picker Popup -->
   <div class="icon-picker" id="iconPicker">
@@ -557,7 +509,24 @@
           <button class="settings-tab" data-stab="data" data-i18n="dataTab">Data</button>
           <button class="settings-tab settings-debug-tab" data-stab="debug" style="display:none">🐞</button>
         </div>
+        <button class="settings-lang-btn" id="settingsLangBtn" data-i18n-title="language" title="Language">
+          <span class="lang-btn-flag" id="langBtnFlag"></span>
+        </button>
         <button class="settings-modal-close" id="settingsModalClose">&times;</button>
+      </div>
+      <div class="settings-lang-picker" id="settingsLangPicker">
+        <div class="lang-picker-grid" id="langPickerGrid">
+          <button class="lang-picker-item" data-lang="en"><span class="lang-flag">🇺🇸</span><span class="lang-name">English</span></button>
+          <button class="lang-picker-item" data-lang="es"><span class="lang-flag">🇪🇸</span><span class="lang-name">Español</span></button>
+          <button class="lang-picker-item" data-lang="fr"><span class="lang-flag">🇫🇷</span><span class="lang-name">Français</span></button>
+          <button class="lang-picker-item" data-lang="de"><span class="lang-flag">🇩🇪</span><span class="lang-name">Deutsch</span></button>
+          <button class="lang-picker-item" data-lang="it"><span class="lang-flag">🇮🇹</span><span class="lang-name">Italiano</span></button>
+          <button class="lang-picker-item" data-lang="pt"><span class="lang-flag">🇧🇷</span><span class="lang-name">Português</span></button>
+          <button class="lang-picker-item" data-lang="ru"><span class="lang-flag">🇷🇺</span><span class="lang-name">Русский</span></button>
+          <button class="lang-picker-item" data-lang="ja"><span class="lang-flag">🇯🇵</span><span class="lang-name">日本語</span></button>
+          <button class="lang-picker-item" data-lang="ko"><span class="lang-flag">🇰🇷</span><span class="lang-name">한국어</span></button>
+          <button class="lang-picker-item" data-lang="zh"><span class="lang-flag">🇨🇳</span><span class="lang-name">中文</span></button>
+        </div>
       </div>
       <div class="settings-modal-body">
         <!-- Visuals & Language tab -->
@@ -803,10 +772,6 @@
             <span class="widget-toggle-label" data-i18n="widgetNotesTodo">Notes / Todo</span>
             <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
           </div>
-          <div class="widget-toggle-row" data-widget="gmail">
-            <span class="widget-toggle-label" data-i18n="widgetGmailMeetings">Gmail &amp; Meetings</span>
-            <label class="widget-toggle-switch"><input type="checkbox"><span class="widget-toggle-slider"></span></label>
-          </div>
           <div class="widget-group-label" data-i18n="bottomPanel">Bottom</div>
           <div class="widget-toggle-row" data-widget="newsTicker">
             <span class="widget-toggle-label" data-i18n="widgetHistoryTicker">This Day in History</span>
@@ -838,10 +803,6 @@
           <div class="shortcuts-section">
             <div class="shortcuts-group-label" data-i18n="soundbarGroup">Soundbar</div>
             <div class="shortcuts-row"><kbd>Alt+Shift+P</kbd> <span data-i18n="shortcutToggleRadio">Play / Stop radio</span></div>
-          </div>
-          <div class="shortcuts-section">
-            <div class="shortcuts-group-label" data-i18n="gmailGroup">Gmail</div>
-            <div class="shortcuts-row"><kbd>Alt+Shift+M</kbd> <span data-i18n="shortcutInstantMeeting">Instant Meeting</span></div>
           </div>
           <div class="shortcuts-section">
             <div class="shortcuts-group-label" data-i18n="generalGroup">General</div>
@@ -895,39 +856,9 @@
           <button class="settings-reset-btn debug-exit-btn" id="debugExitBtn">Exit debug mode</button>
         </div>
       </div>
-      <div class="settings-lang-picker" id="settingsLangPicker">
-        <div class="lang-picker-grid" id="langPickerGrid">
-          <button class="lang-picker-item" data-lang="en"><span class="lang-flag">🇺🇸</span><span class="lang-name">English</span></button>
-          <button class="lang-picker-item" data-lang="es"><span class="lang-flag">🇪🇸</span><span class="lang-name">Español</span></button>
-          <button class="lang-picker-item" data-lang="fr"><span class="lang-flag">🇫🇷</span><span class="lang-name">Français</span></button>
-          <button class="lang-picker-item" data-lang="de"><span class="lang-flag">🇩🇪</span><span class="lang-name">Deutsch</span></button>
-          <button class="lang-picker-item" data-lang="it"><span class="lang-flag">🇮🇹</span><span class="lang-name">Italiano</span></button>
-          <button class="lang-picker-item" data-lang="pt"><span class="lang-flag">🇧🇷</span><span class="lang-name">Português</span></button>
-          <button class="lang-picker-item" data-lang="ru"><span class="lang-flag">🇷🇺</span><span class="lang-name">Русский</span></button>
-          <button class="lang-picker-item" data-lang="ja"><span class="lang-flag">🇯🇵</span><span class="lang-name">日本語</span></button>
-          <button class="lang-picker-item" data-lang="ko"><span class="lang-flag">🇰🇷</span><span class="lang-name">한국어</span></button>
-          <button class="lang-picker-item" data-lang="zh"><span class="lang-flag">🇨🇳</span><span class="lang-name">中文</span></button>
-        </div>
-      </div>
       <div class="settings-app-info" id="settingsAppInfo" style="display:none;">
         <span class="settings-app-version" id="appVersionLabel"></span>
         <span class="settings-app-email" id="appUserEmail"></span>
-      </div>
-      <div class="settings-modal-footer">
-        <button class="settings-google-signin" id="googleSignInHover" style="display: none;" data-i18n-title="signInWithGoogle" title="Sign in with Google">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/></svg>
-          <span data-i18n="signInWithGoogle">Sign in with Google</span>
-        </button>
-        <button class="settings-google-signout" id="googleSignOutBtn" style="display: none;">
-          <span class="signout-user-name" id="signoutUserName"></span>
-          <span class="signout-hover-label">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
-            <span data-i18n="signOutLabel">Sign out</span>
-          </span>
-        </button>
-        <button class="settings-lang-btn" id="settingsLangBtn" data-i18n-title="language" title="Language">
-          <span class="lang-btn-flag" id="langBtnFlag"></span>
-        </button>
       </div>
     </div>
   </div>
@@ -945,7 +876,6 @@
   <!-- Widgets -->
   <script src="js/clock.js"></script>
   <script src="js/background.js"></script>
-  <script src="js/gmail.js"></script>
   <script src="js/news.js"></script>
   <script src="js/widgets.js"></script>
   <script src="js/ai-chat.js"></script>
