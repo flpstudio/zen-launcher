@@ -416,6 +416,14 @@ function initSettingsModal() {
       debugExitBtn.addEventListener('click', hideDebug);
     }
 
+    // Show Chrome user email in debug panel
+    const debugUserEl = document.getElementById('debugChromeUser');
+    if (debugUserEl && chrome.identity && chrome.identity.getProfileUserInfo) {
+      chrome.identity.getProfileUserInfo({ accountStatus: 'ANY' }, (info) => {
+        debugUserEl.textContent = info.email || '(no email)';
+      });
+    }
+
     // Corporate user debug toggle
     const corpToggle = document.getElementById('debugCorporateToggle');
     if (corpToggle) {
