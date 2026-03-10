@@ -52,6 +52,8 @@ const PRESET_ALIGNMENTS = {
   explorer:   DEFAULT_PRESET_ALIGNMENT,
   fullDeck:   DEFAULT_PRESET_ALIGNMENT,
 };
+const WIDGET_PRESET_STORAGE_KEY = 'widgetPreset';
+let widgetTogglesHydrated = false;
 
 // Widget key -> init function(s) mapping for lazy loading
 const WIDGET_INIT_MAP = {
@@ -93,6 +95,12 @@ function detectPresetFromVisibility(vis) {
 function selectPresetRadio(presetName) {
   const radio = document.querySelector(`input[name="widgetPreset"][value="${presetName}"]`);
   if (radio) radio.checked = true;
+}
+
+function saveWidgetSettings(visibility, presetName) {
+  const payload = { widgetVisibility: visibility };
+  if (presetName) payload[WIDGET_PRESET_STORAGE_KEY] = presetName;
+  chrome.storage.local.set(payload);
 }
 
 // ============ Onboarding ============
@@ -473,7 +481,7 @@ function initSettingsModal() {
     toggleAllCheckbox.indeterminate = !allChecked && !noneChecked;
   }
 
-  chrome.storage.local.get('widgetVisibility', (data) => {
+  chrome.storage.local.get(['widgetVisibility', WIDGET_PRESET_STORAGE_KEY], (data) => {
     const visibility = { ...DEFAULT_WIDGET_VISIBILITY, ...(data.widgetVisibility || {}) };
 
     modal.querySelectorAll('.widget-toggle-row[data-widget]').forEach(row => {
@@ -488,16 +496,23 @@ function initSettingsModal() {
         applyWidgetVisibility(key, checkbox.checked);
         if (key === 'newsTicker') enforceSystemStatsDependency();
         const vis = getWidgetVisibilityFromDOM();
-        chrome.storage.local.set({ widgetVisibility: vis });
+        const presetName = detectPresetFromVisibility(vis);
+        saveWidgetSettings(vis, presetName);
         updateToggleAllState();
-        selectPresetRadio(detectPresetFromVisibility(vis));
+        selectPresetRadio(presetName);
       });
     });
 
     updateToggleAllState();
     enforceSystemStatsDependency();
-    // Detect and select the matching preset on load
-    selectPresetRadio(detectPresetFromVisibility(visibility));
+    widgetTogglesHydrated = true;
+    const savedPreset = data[WIDGET_PRESET_STORAGE_KEY];
+    if (savedPreset) {
+      selectPresetRadio(savedPreset);
+    } else {
+      // Fallback for existing users that don't have explicit preset storage yet.
+      selectPresetRadio(detectPresetFromVisibility(visibility));
+    }
   });
 
   // Toggle all widgets on/off
@@ -514,8 +529,9 @@ function initSettingsModal() {
       if (document.body.classList.contains('corporate-user')) enforceCorporateNewsTicker();
       enforceSystemStatsDependency();
       const vis = getWidgetVisibilityFromDOM();
-      chrome.storage.local.set({ widgetVisibility: vis });
-      selectPresetRadio(detectPresetFromVisibility(vis));
+      const presetName = detectPresetFromVisibility(vis);
+      saveWidgetSettings(vis, presetName);
+      selectPresetRadio(presetName);
     });
   }
 
@@ -535,7 +551,7 @@ function initSettingsModal() {
       if (document.body.classList.contains('corporate-user')) enforceCorporateNewsTicker();
       enforceSystemStatsDependency();
       const updatedVis = getWidgetVisibilityFromDOM();
-      chrome.storage.local.set({ widgetVisibility: updatedVis });
+      saveWidgetSettings(updatedVis, presetName);
       updateToggleAllState();
       applyPresetAlignments(presetName);
     });
@@ -693,11 +709,18 @@ function enforceCorporateNewsTicker() {
     }
     row.classList.add('corporate-locked');
   }
-  chrome.storage.local.get('widgetVisibility', (data) => {
-    const vis = { ...(data.widgetVisibility || {}) };
+  if (widgetTogglesHydrated) {
+    const vis = getWidgetVisibilityFromDOM();
     vis.newsTicker = true;
-    chrome.storage.local.set({ widgetVisibility: vis });
-  });
+    saveWidgetSettings(vis, detectPresetFromVisibility(vis));
+  } else {
+    // Before toggles are hydrated, avoid writing DOM defaults and patch stored value directly.
+    chrome.storage.local.get(['widgetVisibility', WIDGET_PRESET_STORAGE_KEY], (data) => {
+      const vis = { ...DEFAULT_WIDGET_VISIBILITY, ...(data.widgetVisibility || {}) };
+      vis.newsTicker = true;
+      saveWidgetSettings(vis, data[WIDGET_PRESET_STORAGE_KEY] || detectPresetFromVisibility(vis));
+    });
+  }
   // Re-fetch news from corporate RSS source if ticker was already initialized
   if (initializedWidgets.has('newsTicker')) {
     loadHistoryFresh().then(events => {
